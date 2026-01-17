@@ -1,0 +1,33 @@
+{
+    "name": "wishborn/fancy-flux",
+    "description": "Custom Flux UI components - carousel and color-picker",
+    "keywords": ["flux", "laravel", "livewire", "components", "ui", "carousel", "color-picker"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wish Born",
+            "email": "wish@impact.do"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/view": "^10.0|^11.0|^12.0",
+        "livewire/flux": "^2.0",
+        "livewire/livewire": "^3.7.3|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "FancyFlux\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "FancyFlux\\FancyFluxServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
