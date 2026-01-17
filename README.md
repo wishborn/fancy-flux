@@ -2,6 +2,9 @@
 
 Custom Flux UI components for Laravel Livewire applications.
 
+[![Latest Version](https://img.shields.io/github/v/release/wishborn/fancy-flux?style=flat-square)](https://github.com/wishborn/fancy-flux/releases)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+
 ## Components
 
 ### Carousel

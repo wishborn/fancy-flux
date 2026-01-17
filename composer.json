@@ -1,6 +1,7 @@
 {
     "name": "wishborn/fancy-flux",
     "description": "Custom Flux UI components - carousel and color-picker",
+    "type": "library",
     "keywords": ["flux", "laravel", "livewire", "components", "ui", "carousel", "color-picker"],
     "license": "MIT",
     "authors": [
@@ -9,6 +10,7 @@
             "email": "wish@impact.do"
         }
     ],
+    "version": "1.0.0",
     "require": {
         "php": "^8.2",
         "illuminate/support": "^10.0|^11.0|^12.0",
@@ -28,6 +30,5 @@
             ]
         }
     },
-    "minimum-stability": "dev",
     "prefer-stable": true
 }
