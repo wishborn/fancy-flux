@@ -33,6 +33,8 @@ $variant = $variant ?? 'directional';
 $stepName = $name ?? 'step-' . uniqid();
 
 // Generate a unique key for wire:key if not provided
+// Use the provided wire:key if available, otherwise generate one based on step name
+// Note: It's better to provide wire:key from parent that includes carousel ID
 $key = $attributes->get('wire:key') ?? 'carousel-item-' . $stepName;
 
 // Step items fill the panels container

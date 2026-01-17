@@ -93,6 +93,11 @@ $nextButtonClasses = match ($variant) {
 };
 @endphp
 
+{{-- 
+    Simple approach: Controls live inside the carousel's x-data scope.
+    We just call prev()/next() directly - Alpine resolves them from the parent carousel.
+    No caching, no events, no complex state management.
+--}}
 <div
     {{ $attributes->except('wire:submit')->class($containerClasses) }}
     data-flux-carousel-controls
@@ -101,7 +106,7 @@ $nextButtonClasses = match ($variant) {
         <button
             type="button"
             class="{{ $prevButtonClasses }}"
-            x-on:click="prev()"
+            x-on:click.prevent="prev()"
             :disabled="!canGoPrev()"
             x-show="canGoPrev() || loop"
             aria-label="{{ $prevLabel }}"
@@ -125,12 +130,12 @@ $nextButtonClasses = match ($variant) {
             {{-- - If no wire:submit, just navigate (no finish action) --}}
             @if ($variant === 'wizard')
                 @if ($wireSubmit)
-                    x-on:click="if (isLast()) { $wire.call('{{ $wireSubmit }}'); $dispatch('carousel-finish'); } else { next(); }"
+                    x-on:click.prevent="if (isLast()) { $wire.call('{{ $wireSubmit }}'); $dispatch('carousel-finish'); } else { next(); }"
                 @else
-                    x-on:click="next()"
+                    x-on:click.prevent="next()"
                 @endif
             @else
-                x-on:click="next()"
+                x-on:click.prevent="next()"
             @endif
             {{-- For wizard variant with wire:submit, don't disable on last step (allow "Complete" action) --}}
             {{-- For wizard without wire:submit, disable on last step like normal --}}

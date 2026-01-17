@@ -44,7 +44,11 @@
 
 @php
 // Extract wire:submit from attributes if provided directly on carousel
+// Remove it from attributes to prevent Livewire from wrapping in a form
 $wireSubmit = $wireSubmit ?? $attributes->get('wire:submit');
+if ($attributes->has('wire:submit')) {
+    $attributes = $attributes->except('wire:submit');
+}
 @endphp
 
 @php
@@ -74,7 +78,7 @@ $classes = Flux::classes()
 @endphp
 
 <div
-    {{ $attributes->class($classes) }}
+    {{ $attributes->merge(['wire:key' => 'carousel-' . $carouselId])->class($classes) }}
     x-data="{
         {{-- Registry of step names in order --}}
         steps: [],
@@ -132,7 +136,7 @@ $classes = Flux::classes()
             if (this.steps.includes(name)) {
                 this.active = name;
                 this.resetAutoplay();
-                this.$dispatch('carousel-navigated', { name: this.active, index: this.activeIndex, totalSteps: this.totalSteps });
+                this.$dispatch('carousel-navigated', { id: '{{ $carouselId }}', name: this.active, index: this.activeIndex, totalSteps: this.totalSteps });
             }
         },
         {{-- Navigate to a specific step by index --}}
@@ -197,6 +201,7 @@ $classes = Flux::classes()
     x-on:mouseenter="stopAutoplay()"
     x-on:mouseleave="if (autoplay) startAutoplay()"
     {{-- External control events for programmatic navigation --}}
+    {{-- Only respond if ID matches exactly, or if no ID is provided (for backward compatibility) --}}
     x-on:carousel-next.window="if ($event.detail?.id === '{{ $carouselId }}' || !$event.detail?.id) next()"
     x-on:carousel-prev.window="if ($event.detail?.id === '{{ $carouselId }}' || !$event.detail?.id) prev()"
     x-on:carousel-goto.window="if ($event.detail?.id === '{{ $carouselId }}' || !$event.detail?.id) { $event.detail?.name ? goTo($event.detail.name) : goToIndex($event.detail?.index ?? 0) }"
@@ -219,6 +224,7 @@ $classes = Flux::classes()
                     :description="$slide['description'] ?? null"
                     :src="$slide['src'] ?? $slide['image'] ?? null"
                     :alt="$slide['alt'] ?? $slide['label'] ?? null"
+                    wire:key="carousel-{{ $carouselId }}-item-{{ $slide['name'] }}"
                 />
             @endforeach
         </flux:carousel.panels>
@@ -233,6 +239,7 @@ $classes = Flux::classes()
                         :label="in_array($variant, ['wizard', 'thumbnail']) ? ($slide['label'] ?? null) : null"
                         :src="$variant === 'thumbnail' ? ($slide['thumbnail'] ?? $slide['src'] ?? $slide['image'] ?? null) : null"
                         :alt="$variant === 'thumbnail' ? ($slide['alt'] ?? $slide['label'] ?? null) : null"
+                        wire:key="carousel-{{ $carouselId }}-step-{{ $slide['name'] }}"
                     />
                 @endforeach
             </flux:carousel.steps>
