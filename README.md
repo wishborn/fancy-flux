@@ -80,6 +80,14 @@ Ready-to-use examples are available in the `demos/` folder. Copy the demo files 
 
 See the [demos README](demos/README.md) for details.
 
+## Laravel Boost Integration
+
+Fancy Flux includes AI guidelines for [Laravel Boost](https://github.com/laravel/boost). When you install this package and run `php artisan boost:install`, Boost will automatically load the guidelines to help AI assistants generate correct code for Fancy Flux components.
+
+### Custom AI Guidelines
+
+You can also add custom AI guidelines for Fancy Flux by creating a `.ai/guidelines/fancy-flux.md` file in your application. This allows you to customize how AI assistants understand and use Fancy Flux components in your specific project context.
+
 ## Requirements
 
 - PHP 8.2+
