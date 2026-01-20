@@ -120,6 +120,72 @@ Fancy Flux includes AI guidelines for [Laravel Boost](https://github.com/laravel
 
 You can also add custom AI guidelines for Fancy Flux by creating a `.ai/guidelines/fancy-flux.md` file in your application. This allows you to customize how AI assistants understand and use Fancy Flux components in your specific project context.
 
+## Upgrade Guide
+
+### General Upgrade Steps
+
+1. **Update via Composer:**
+   ```bash
+   # Update to latest version
+   composer update wishborn/fancy-flux
+   
+   # Or update to a specific version
+   composer require wishborn/fancy-flux:^1.0.8
+   ```
+
+2. **Clear caches:**
+   ```bash
+   php artisan config:clear
+   php artisan view:clear
+   ```
+
+3. **Review changelog:** Check [CHANGELOG.md](CHANGELOG.md) for version-specific changes
+
+4. **Test your application:** Verify all components work as expected
+
+### Upgrading to 1.0.8+
+
+**New Feature: Component Prefix Configuration**
+
+Version 1.0.8 introduces optional component prefix configuration to avoid naming conflicts. This is **backward compatible** - existing code will continue to work without changes.
+
+**Optional: Configure a Prefix**
+
+If you want to use a custom prefix (recommended for new projects):
+
+1. **Publish the config file:**
+   ```bash
+   php artisan vendor:publish --tag=fancy-flux-config
+   ```
+
+2. **Set prefix in `.env` (optional):**
+   ```env
+   FANCY_FLUX_PREFIX=fancy
+   FANCY_FLUX_USE_FLUX_NAMESPACE=true
+   ```
+
+3. **Clear config cache:**
+   ```bash
+   php artisan config:clear
+   ```
+
+**No Action Required**
+
+If you don't configure a prefix, components continue to work exactly as before:
+- `<flux:carousel>` - Still works
+- `<flux:color-picker>` - Still works
+- `<flux:emoji-select>` - Still works
+
+**Migration Path (Optional)**
+
+If you want to migrate to a prefixed namespace:
+
+1. Set `FANCY_FLUX_PREFIX` and keep `FANCY_FLUX_USE_FLUX_NAMESPACE=true`
+2. Gradually update templates to use the prefixed version
+3. Once all templates are updated, optionally set `FANCY_FLUX_USE_FLUX_NAMESPACE=false`
+
+See [Prefix Configuration](docs/prefix-configuration.md) for detailed migration steps.
+
 ## Requirements
 
 - PHP 8.2+
