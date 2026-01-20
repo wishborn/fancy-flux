@@ -22,12 +22,12 @@ The carousel component supports data-driven and slot-based usage patterns with m
 
 @verbatim
 <code-snippet name="Data-Driven Carousel" lang="blade">
-@php
+@@php
 $slides = [
     ['name' => 'slide1', 'label' => 'First Slide', 'src' => '/images/slide1.jpg'],
     ['name' => 'slide2', 'label' => 'Second Slide', 'src' => '/images/slide2.jpg'],
 ];
-@endphp
+@@endphp
 
 <flux:carousel :data="$slides" autoplay />
 </code-snippet>
@@ -45,7 +45,7 @@ $slides = [
     
     <flux:carousel.panels>
         <flux:carousel.step.item name="account">
-            {{-- Form content --}}
+            <!-- Form content -->
         </flux:carousel.step.item>
     </flux:carousel.panels>
     
@@ -79,9 +79,9 @@ class MyComponent extends Component
 <flux:carousel variant="wizard" :loop="false" name="parent-wizard">
     <flux:carousel.panels>
         <flux:carousel.step.item name="step1">
-            {{-- Nested carousel --}}
+            <!-- Nested carousel -->
             <flux:carousel variant="wizard" name="nested-wizard" parentCarousel="parent-wizard">
-                {{-- Nested content --}}
+                <!-- Nested content -->
             </flux:carousel>
         </flux:carousel.step.item>
     </flux:carousel.panels>
@@ -97,7 +97,7 @@ Native color input with enhanced UI and preset support.
 <code-snippet name="Color Picker" lang="blade">
 <flux:color-picker label="Primary Color" wire:model="primaryColor" />
 
-{{-- With custom presets --}}
+<!-- With custom presets -->
 <flux:color-picker 
     label="Brand Colors" 
     wire:model="brandColor"
@@ -114,14 +114,14 @@ Composable emoji picker with category navigation and search.
 <code-snippet name="Emoji Select" lang="blade">
 <flux:emoji-select wire:model.live="selectedEmoji" />
 
-{{-- With label and custom placeholder --}}
+<!-- With label and custom placeholder -->
 <flux:emoji-select 
     wire:model.live="reactionEmoji" 
     label="Reaction" 
     placeholder="Choose reaction..." 
 />
 
-{{-- In form groups --}}
+<!-- In form groups -->
 <flux:input.group>
     <flux:emoji-select wire:model.live="reactionEmoji" />
     <flux:input placeholder="Add a comment..." />
@@ -131,14 +131,14 @@ Composable emoji picker with category navigation and search.
 
 ### Key Conventions
 
-- **Component Namespace**: All components use the `flux:` namespace (e.g., `<flux:carousel>`, `<flux:color-picker>`)
-- **Livewire Integration**: Components work seamlessly with `wire:model` and `wire:submit`
-- **Unique Names**: When using multiple carousels, always provide unique `name` props
-- **Nested Carousels**: Use `parentCarousel` prop to link nested carousels to their parent
-- **Programmatic Control**: Use `InteractsWithCarousel` trait in Livewire components for programmatic navigation
+- **Component Namespace**: All components use the flux: namespace (e.g., flux:carousel, flux:color-picker)
+- **Livewire Integration**: Components work seamlessly with wire:model and wire:submit
+- **Unique Names**: When using multiple carousels, always provide unique name props
+- **Nested Carousels**: Use parentCarousel prop to link nested carousels to their parent
+- **Programmatic Control**: Use InteractsWithCarousel trait in Livewire components for programmatic navigation
 
 ### Documentation
 
-- Full documentation: See `docs/` folder in package
-- Demos: See `demos/` folder for ready-to-use examples
-- Usage guide: See `USAGE.md` in package root
+- Full documentation: See docs/ folder in package
+- Demos: See demos/ folder for ready-to-use examples
+- Usage guide: See USAGE.md in package root
