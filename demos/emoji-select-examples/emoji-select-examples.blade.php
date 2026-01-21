@@ -102,6 +102,26 @@
         </form>
     </flux:card>
 
+    {{-- Input Group Example --}}
+    <flux:card>
+        <flux:heading size="lg">Input Group Integration</flux:heading>
+        <flux:text class="mt-1 mb-4">Use emoji-select within an input group alongside other inputs.</flux:text>
+        <div class="space-y-4">
+            <flux:field>
+                <flux:label>Post Reaction</flux:label>
+                <flux:input.group>
+                    <flux:emoji-select wire:model.live="groupEmoji" variant="group" />
+                    <flux:input placeholder="Add a comment..." />
+                </flux:input.group>
+            </flux:field>
+            @if($groupEmoji)
+                <div class="text-sm text-zinc-500">
+                    Selected: <span class="text-xl">{{ $groupEmoji }}</span>
+                </div>
+            @endif
+        </div>
+    </flux:card>
+
     {{-- Search Feature --}}
     <flux:card>
         <flux:heading size="lg">Search Feature</flux:heading>

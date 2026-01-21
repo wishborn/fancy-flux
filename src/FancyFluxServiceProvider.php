@@ -16,10 +16,22 @@ class FancyFluxServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Load base PHP config
         $this->mergeConfigFrom(
             __DIR__.'/../config/fancy-flux.php',
             'fancy-flux'
         );
+
+        // ENV variables override PHP config (highest priority)
+        if (env('FANCY_FLUX_PREFIX') !== null) {
+            config(['fancy-flux.prefix' => env('FANCY_FLUX_PREFIX')]);
+        }
+        if (env('FANCY_FLUX_USE_FLUX_NAMESPACE') !== null) {
+            config(['fancy-flux.use_flux_namespace' => filter_var(env('FANCY_FLUX_USE_FLUX_NAMESPACE'), FILTER_VALIDATE_BOOLEAN)]);
+        }
+        if (env('FANCY_FLUX_ENABLE_DEMO_ROUTES') !== null) {
+            config(['fancy-flux.enable_demo_routes' => filter_var(env('FANCY_FLUX_ENABLE_DEMO_ROUTES'), FILTER_VALIDATE_BOOLEAN)]);
+        }
     }
 
     /**
@@ -31,6 +43,7 @@ class FancyFluxServiceProvider extends ServiceProvider
         $this->bootCarousel();
         $this->publishAssets();
         $this->publishConfig();
+        $this->publishDemos();
     }
 
     /**
@@ -85,6 +98,47 @@ class FancyFluxServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/fancy-flux.php' => config_path('fancy-flux.php'),
             ], 'fancy-flux-config');
+        }
+    }
+
+    /**
+     * Publish demo routes and views.
+     * 
+     * Demos can be accessed directly from the package (for test app) or published to the app.
+     * After publishing, users can access demos at /fancy-flux-demos
+     * 
+     * To publish:
+     *   php artisan vendor:publish --tag=fancy-flux-demos-routes
+     *   php artisan vendor:publish --tag=fancy-flux-demos-views
+     */
+    protected function publishDemos(): void
+    {
+        if ($this->app->runningInConsole()) {
+            // Publish demo routes (users can customize these)
+            $this->publishes([
+                __DIR__.'/../routes/demos.php' => base_path('routes/fancy-flux-demos.php'),
+            ], 'fancy-flux-demos-routes');
+
+            // Publish demo views only (not PHP source files)
+            $this->publishes([
+                __DIR__.'/../demos/basic-carousel/basic-carousel.blade.php' => resource_path('views/livewire/basic-carousel-demo.blade.php'),
+                __DIR__.'/../demos/wizard-form/wizard-form.blade.php' => resource_path('views/livewire/wizard-form-demo.blade.php'),
+                __DIR__.'/../demos/nested-carousel/nested-carousel.blade.php' => resource_path('views/livewire/nested-carousel-demo.blade.php'),
+                __DIR__.'/../demos/dynamic-carousel/dynamic-carousel.blade.php' => resource_path('views/livewire/dynamic-carousel-demo.blade.php'),
+                __DIR__.'/../demos/color-picker-examples/color-picker-examples.blade.php' => resource_path('views/livewire/color-picker-examples-demo.blade.php'),
+                __DIR__.'/../demos/emoji-select-examples/emoji-select-examples.blade.php' => resource_path('views/livewire/emoji-select-examples-demo.blade.php'),
+            ], 'fancy-flux-demos-views');
+        }
+
+        // Register demo views namespace for direct access from package
+        // Views in subdirectories are accessed using dot notation:
+        // fancy-flux-demos::emoji-select-examples.emoji-select-examples
+        $this->loadViewsFrom(__DIR__.'/../demos', 'fancy-flux-demos');
+
+        // Load demo routes from package if enabled via config
+        // Users can publish routes to customize them instead
+        if (config('fancy-flux.enable_demo_routes', false)) {
+            $this->loadRoutesFrom(__DIR__.'/../routes/demos.php');
         }
     }
 }

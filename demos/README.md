@@ -21,6 +21,22 @@ Comprehensive examples showing all color picker variants, sizes, and features.
 
 ## Usage
 
+### Option 1: Publish Routes and Views (Recommended)
+
+Publish demo routes and views to your application:
+
+```bash
+# Publish routes
+php artisan vendor:publish --tag=fancy-flux-demos-routes
+
+# Publish views
+php artisan vendor:publish --tag=fancy-flux-demos-views
+```
+
+Then copy the PHP component files from the `demos/` folder to `app/Livewire/` and update the view paths. See [PUBLISHING.md](PUBLISHING.md) for detailed instructions.
+
+### Option 2: Copy Files Manually
+
 1. Copy the demo files to your Laravel application:
    - PHP files go in `app/Livewire/`
    - Blade views go in `resources/views/livewire/`

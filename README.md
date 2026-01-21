@@ -68,21 +68,40 @@ To avoid naming conflicts with official Flux components or other custom componen
 php artisan vendor:publish --tag=fancy-flux-config
 ```
 
-**Set in your `.env` file:**
+**Configure in `config/fancy-flux.php`:**
+```php
+return [
+    'prefix' => 'fancy',
+    'use_flux_namespace' => true,
+    'enable_demo_routes' => false,
+];
+```
+
+**Configuration Priority:**
+
+Configuration is loaded in this order (later values override earlier ones):
+1. **Default PHP config** (`config/fancy-flux.php`) - Base defaults
+2. **Environment variables** (`.env`) - **Highest priority**, overrides PHP config
+
+**Environment Variables (Optional Override):**
+
+You can override PHP config with environment variables for environment-specific settings:
 ```env
 FANCY_FLUX_PREFIX=fancy
 FANCY_FLUX_USE_FLUX_NAMESPACE=true
+FANCY_FLUX_ENABLE_DEMO_ROUTES=false
 ```
 
 **Usage Examples:**
 
 - **No prefix (default):** Components available as `<flux:carousel>`
-- **With prefix 'fancy':** Components available as `<fancy:carousel>` (and optionally `<flux:carousel>` if `FANCY_FLUX_USE_FLUX_NAMESPACE=true`)
+- **With prefix 'fancy':** Components available as `<fancy:carousel>` (and optionally `<flux:carousel>` if `use_flux_namespace` is `true`)
 
 **Configuration Options:**
 
-- `FANCY_FLUX_PREFIX` - Custom prefix for components (e.g., `fancy`, `custom`, `myapp`)
-- `FANCY_FLUX_USE_FLUX_NAMESPACE` - When `true`, components are also available in the `flux` namespace for backward compatibility. Set to `false` to use ONLY the prefixed namespace.
+- `prefix` - Custom prefix for components (e.g., `"fancy"`, `"custom"`, `"myapp"`). Set to `null` for no prefix.
+- `use_flux_namespace` - When `true`, components are also available in the `flux` namespace for backward compatibility. Set to `false` to use ONLY the prefixed namespace.
+- `enable_demo_routes` - When `true`, demo routes are loaded from the package at `/fancy-flux-demos/*`. Set to `false` to publish and customize routes yourself.
 
 **Why use a prefix?**
 
@@ -158,10 +177,13 @@ If you want to use a custom prefix (recommended for new projects):
    php artisan vendor:publish --tag=fancy-flux-config
    ```
 
-2. **Set prefix in `.env` (optional):**
-   ```env
-   FANCY_FLUX_PREFIX=fancy
-   FANCY_FLUX_USE_FLUX_NAMESPACE=true
+2. **Set prefix in `config/fancy-flux.php`:**
+   ```php
+   return [
+       'prefix' => 'fancy',
+       'use_flux_namespace' => true,
+       'enable_demo_routes' => false,
+   ];
    ```
 
 3. **Clear config cache:**

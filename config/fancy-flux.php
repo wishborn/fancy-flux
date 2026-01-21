@@ -19,7 +19,7 @@ return [
     |   - <flux:component-name> (if use_flux_namespace is true)
     |
     */
-    'prefix' => env('FANCY_FLUX_PREFIX', null),
+    'prefix' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
     | any potential conflicts with official Flux components.
     |
     */
-    'use_flux_namespace' => env('FANCY_FLUX_USE_FLUX_NAMESPACE', true),
+    'use_flux_namespace' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -51,4 +51,21 @@ return [
         'color-picker',
         'emoji-select',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Demo Routes
+    |--------------------------------------------------------------------------
+    |
+    | When true, demo routes will be loaded directly from the package.
+    | Routes will be available at /fancy-flux-demos/*
+    |
+    | Set to false if you want to publish and customize the routes yourself:
+    |   php artisan vendor:publish --tag=fancy-flux-demos-routes
+    |
+    | For production, it's recommended to set this to false and publish
+    | the routes so you can customize URLs and add authentication/middleware.
+    |
+    */
+    'enable_demo_routes' => false,
 ];

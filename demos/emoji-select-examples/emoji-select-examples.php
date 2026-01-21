@@ -21,6 +21,7 @@ class EmojiSelectExamples extends Component
     public string $filledEmoji = '';
     public string $preselectedEmoji = '🎉';
     public string $reactionEmoji = '';
+    public string $groupEmoji = '';
 
     public function render()
     {

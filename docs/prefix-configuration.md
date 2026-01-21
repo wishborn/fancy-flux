@@ -18,16 +18,38 @@ php artisan vendor:publish --tag=fancy-flux-config
 
 This creates `config/fancy-flux.php` in your application.
 
-### Step 2: Configure in `.env`
+### Step 2: Configure in `config/fancy-flux.php`
 
-```env
-# Custom prefix for Fancy Flux components (e.g., 'fancy', 'custom', 'myapp')
-FANCY_FLUX_PREFIX=fancy
+After publishing, edit `config/fancy-flux.php`:
 
-# When true, components are also available in 'flux' namespace (default: true)
-# Set to false to use ONLY the prefixed namespace
-FANCY_FLUX_USE_FLUX_NAMESPACE=true
+```php
+return [
+    'prefix' => 'fancy',
+    'use_flux_namespace' => true,
+    'enable_demo_routes' => false,
+];
 ```
+
+**Configuration Priority:**
+
+Configuration is loaded in this order (later values override earlier ones):
+1. Default PHP config (`config/fancy-flux.php`) - Base defaults
+2. Environment variables (`.env`) - **Highest priority**, overrides PHP config
+
+**Environment Variables (Optional Override):**
+
+You can override PHP config with environment variables:
+```env
+FANCY_FLUX_PREFIX=fancy
+FANCY_FLUX_USE_FLUX_NAMESPACE=true
+FANCY_FLUX_ENABLE_DEMO_ROUTES=false
+```
+
+**Configuration Options:**
+
+- `prefix` - Custom prefix for components (e.g., `"fancy"`, `"custom"`, `"myapp"`). Set to `null` for no prefix.
+- `use_flux_namespace` - When `true`, components are also available in the `flux` namespace. Set to `false` to use ONLY the prefixed namespace.
+- `enable_demo_routes` - When `true`, demo routes are loaded from the package. Set to `false` to publish and customize routes yourself.
 
 ## Usage Examples
 
@@ -44,7 +66,7 @@ When `FANCY_FLUX_PREFIX` is not set or empty:
 
 ### With Custom Prefix
 
-When `FANCY_FLUX_PREFIX=fancy` and `FANCY_FLUX_USE_FLUX_NAMESPACE=true`:
+When `prefix: "fancy"` and `use_flux_namespace: true` in `config/fancy-flux.php`:
 
 ```blade
 <!-- Components available with prefix: -->
@@ -78,13 +100,19 @@ When `FANCY_FLUX_PREFIX=fancy` and `FANCY_FLUX_USE_FLUX_NAMESPACE=false`:
 - **Type**: `string|null`
 - **Default**: `null`
 - **Description**: Custom prefix for Fancy Flux components
-- **Examples**: `'fancy'`, `'custom'`, `'myapp'`
+- **Examples**: `"fancy"`, `"custom"`, `"myapp"`, or `null` for no prefix
 
 ### `use_flux_namespace`
 
 - **Type**: `boolean`
 - **Default**: `true`
 - **Description**: When `true`, components are also registered in the `flux` namespace for backward compatibility. When `false`, components are ONLY available with the custom prefix.
+
+### `enable_demo_routes`
+
+- **Type**: `boolean`
+- **Default**: `false`
+- **Description**: When `true`, demo routes are loaded from the package at `/fancy-flux-demos/*`. When `false`, you can publish and customize routes yourself.
 
 ## Migration Guide
 
@@ -116,12 +144,20 @@ If you want to start using a prefix in an existing project:
 
 To remove a prefix and return to default behavior:
 
-1. Remove or set `FANCY_FLUX_PREFIX` to empty/null:
-   ```env
-   FANCY_FLUX_PREFIX=
+1. Set `prefix` to `null` in `config/fancy-flux.php`:
+   ```php
+   return [
+       'prefix' => null,
+       // ... other config
+   ];
    ```
 
-2. Components will be available as `<flux:component-name>` again
+2. Clear config cache:
+   ```bash
+   php artisan config:clear
+   ```
+
+3. Components will be available as `<flux:component-name>` again
 
 ## Best Practices
 
@@ -146,9 +182,12 @@ If components aren't working after setting a prefix:
    php artisan tinker
    >>> config('fancy-flux.prefix')
    >>> config('fancy-flux.use_flux_namespace')
+   >>> config('fancy-flux.enable_demo_routes')
    ```
 
-3. **Check namespace**: Make sure you're using the correct namespace in your Blade templates
+3. **Check PHP config**: Ensure `config/fancy-flux.php` exists and returns a valid array
+
+4. **Check namespace**: Make sure you're using the correct namespace in your Blade templates
 
 ### Both Namespaces Work When They Shouldn't
 
