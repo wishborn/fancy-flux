@@ -4,11 +4,35 @@ Comprehensive usage instructions for all Fancy Flux components with tested examp
 
 ## Components
 
+- **[Action](docs/action.md)** - Reusable button with states, icons, and emojis
 - **[Carousel](docs/carousel.md)** - Flexible carousel/slideshow with multiple variants
 - **[Color Picker](docs/color-picker.md)** - Native color input with enhanced UI
 - **[Emoji Select](docs/emoji-select.md)** - Composable emoji picker with category navigation
 
+## FANCY Facade
+
+The `FANCY` facade provides programmatic access to FancyFlux features:
+
+- **[FANCY Facade](docs/facade.md)** - Emoji lookup, carousel control, and configuration
+
+```php
+// Emoji lookup
+FANCY::emoji('fire');           // 🔥
+FANCY::emoji()->list();         // All 787+ slugs
+FANCY::emoji()->search('heart'); // Search emojis
+
+// Carousel control
+FANCY::carousel('wizard')->next();
+FANCY::carousel('wizard')->goTo('step-3');
+```
+
 ## Quick Links
+
+### Action
+- [State Variants](docs/action.md#state-variants)
+- [Icon Placement](docs/action.md#icon-placement)
+- [Emoji Support](docs/action.md#emoji-support)
+- [Size Variants](docs/action.md#size-variants)
 
 ### Carousel
 - [Data-Driven Carousel](docs/carousel.md#data-driven-carousel)
@@ -30,6 +54,7 @@ Comprehensive usage instructions for all Fancy Flux components with tested examp
 
 Ready-to-use examples are available in the [demos folder](demos/):
 
+- [Action Examples](demos/action-examples/)
 - [Basic Carousel](demos/basic-carousel/)
 - [Wizard Form](demos/wizard-form/)
 - [Nested Carousel](demos/nested-carousel/)

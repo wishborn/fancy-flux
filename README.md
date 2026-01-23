@@ -10,6 +10,21 @@ Custom Flux UI components for Laravel Livewire applications.
 
 ## Components
 
+### ⚡ Action
+
+A reusable button component with state variants, icons, emojis, and flexible placement for action-oriented UI elements.
+
+**Quick Example:**
+```blade
+<flux:action icon="pencil">Edit</flux:action>
+<flux:action emoji="fire" active>Hot!</flux:action>
+<flux:action warn icon="exclamation-triangle">Warning</flux:action>
+```
+
+[📖 Full Documentation](docs/action.md) | [💡 Examples](demos/action-examples/)
+
+---
+
 ### 🎠 Carousel
 
 A flexible carousel/slideshow component with multiple variants:
@@ -50,6 +65,29 @@ A composable emoji picker component with category navigation, search, and custom
 ```
 
 [📖 Full Documentation](docs/emoji-select.md) | [💡 Examples](demos/emoji-select-examples/)
+
+---
+
+## FANCY Facade
+
+The `FANCY` facade provides programmatic access to FancyFlux features:
+
+```php
+// Emoji lookup (787+ emojis with slug-based access)
+FANCY::emoji('fire');           // Returns: 🔥
+FANCY::emoji()->list();         // Get all emoji slugs
+FANCY::emoji()->search('heart'); // Search emojis
+
+// Carousel control
+FANCY::carousel('wizard')->next();
+FANCY::carousel('wizard')->goTo('step-3');
+
+// Configuration
+FANCY::prefix();            // Custom prefix or null
+FANCY::components();        // List of components
+```
+
+[📖 Full Documentation](docs/facade.md)
 
 ---
 
@@ -113,15 +151,18 @@ FANCY_FLUX_ENABLE_DEMO_ROUTES=false
 
 - **[Usage Guide](USAGE.md)** - Comprehensive documentation for all components
 - **[Component Docs](docs/)** - Detailed guides for each component:
+  - [Action](docs/action.md)
   - [Carousel](docs/carousel.md)
   - [Color Picker](docs/color-picker.md)
   - [Emoji Select](docs/emoji-select.md)
+  - [FANCY Facade](docs/facade.md)
 - **[Prefix Configuration](docs/prefix-configuration.md)** - Configure custom component prefixes to avoid naming conflicts
 
 ## Demos
 
 Ready-to-use examples are available in the `demos/` folder. Copy the demo files into your Laravel application to get started quickly:
 
+- **Action Examples** - State variants, icons, emojis, and placements
 - **Basic Carousel** - Simple data-driven carousel
 - **Wizard Form** - Multi-step form with validation
 - **Nested Carousel** - Nested carousels with parent advancement
