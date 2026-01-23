@@ -2,136 +2,46 @@
 
 namespace FancyFlux\Concerns;
 
+use FancyFlux\FancyFlux;
+use FancyFlux\Managers\CarouselController;
 use Livewire\Component;
 
 /**
  * Trait for interacting with carousel components.
- * 
+ *
  * Provides helper methods for programmatic carousel control in Livewire components.
+ * This trait delegates to the FANCY facade's CarouselManager for consistency.
+ *
+ * @deprecated Use FANCY::carousel('name') instead for new code.
+ * @example $this->carousel('wizard')->goTo('step-2')
+ * @example FANCY::carousel('wizard')->goTo('step-2') // Preferred
  */
 trait InteractsWithCarousel
 {
     /**
      * Boot the carousel component macro.
      * Enables $this->carousel('name') syntax in Livewire components.
+     *
+     * Why: Registers a macro on all Livewire components for carousel control.
+     * This provides backward compatibility while the FANCY facade is preferred.
      */
-    public function bootCarousel()
+    public function bootCarousel(): void
     {
-        Component::macro('carousel', function ($name) {
-            return new class ($name) {
-                public function __construct(public $name) {}
-
-                /**
-                 * Navigate to the next slide.
-                 */
-                public function next()
-                {
-                    $component = app('livewire')->current();
-                    $component->js("\$dispatch('carousel-next', { id: '{$this->name}' })");
-                }
-
-                /**
-                 * Navigate to the previous slide.
-                 */
-                public function prev()
-                {
-                    $component = app('livewire')->current();
-                    $component->js("\$dispatch('carousel-prev', { id: '{$this->name}' })");
-                }
-
-                /**
-                 * Navigate to a specific slide by name.
-                 */
-                public function goTo(string $stepName)
-                {
-                    $component = app('livewire')->current();
-                    $component->js("\$dispatch('carousel-goto', { id: '{$this->name}', name: '{$stepName}' })");
-                }
-
-                /**
-                 * Navigate to a specific slide by index.
-                 */
-                public function goToIndex(int $index)
-                {
-                    $component = app('livewire')->current();
-                    $component->js("\$dispatch('carousel-goto', { id: '{$this->name}', index: {$index} })");
-                }
-
-                /**
-                 * Refresh the carousel (re-collect steps from DOM).
-                 * Call this after dynamically adding/removing slides.
-                 */
-                public function refresh()
-                {
-                    $component = app('livewire')->current();
-                    $component->js("\$dispatch('carousel-refresh', { id: '{$this->name}' })");
-                }
-
-                /**
-                 * Refresh and then navigate to a specific slide.
-                 * Useful when adding new slides and immediately navigating to them.
-                 */
-                public function refreshAndGoTo(string $stepName)
-                {
-                    $component = app('livewire')->current();
-                    $component->js("
-                        \$nextTick(() => {
-                            \$dispatch('carousel-refresh', { id: '{$this->name}' });
-                            setTimeout(() => {
-                                \$dispatch('carousel-goto', { id: '{$this->name}', name: '{$stepName}' });
-                            }, 50);
-                        });
-                    ");
-                }
-            };
+        Component::macro('carousel', function (string $name): CarouselController {
+            return app(FancyFlux::class)->carousel($name);
         });
     }
 
     /**
-     * Get a carousel helper instance.
+     * Get a carousel controller instance.
+     *
      * Usage: $this->carousel('carousel-name')->next()
+     *
+     * @param string $name The carousel's unique name/id
+     * @return CarouselController
      */
-    public function carousel($name)
+    public function carousel(string $name): CarouselController
     {
-        return new class ($name) {
-            public function __construct(public $name) {}
-
-            public function next()
-            {
-                app('livewire')->current()->js("\$dispatch('carousel-next', { id: '{$this->name}' })");
-            }
-
-            public function prev()
-            {
-                app('livewire')->current()->js("\$dispatch('carousel-prev', { id: '{$this->name}' })");
-            }
-
-            public function goTo(string $stepName)
-            {
-                app('livewire')->current()->js("\$dispatch('carousel-goto', { id: '{$this->name}', name: '{$stepName}' })");
-            }
-
-            public function goToIndex(int $index)
-            {
-                app('livewire')->current()->js("\$dispatch('carousel-goto', { id: '{$this->name}', index: {$index} })");
-            }
-
-            public function refresh()
-            {
-                app('livewire')->current()->js("\$dispatch('carousel-refresh', { id: '{$this->name}' })");
-            }
-
-            public function refreshAndGoTo(string $stepName)
-            {
-                app('livewire')->current()->js("
-                    \$nextTick(() => {
-                        \$dispatch('carousel-refresh', { id: '{$this->name}' });
-                        setTimeout(() => {
-                            \$dispatch('carousel-goto', { id: '{$this->name}', name: '{$stepName}' });
-                        }, 50);
-                    });
-                ");
-            }
-        };
+        return app(FancyFlux::class)->carousel($name);
     }
 }

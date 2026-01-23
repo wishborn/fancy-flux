@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 | - /fancy-flux-demos/wizard-form
 | - /fancy-flux-demos/nested-carousel
 | - /fancy-flux-demos/dynamic-carousel
+| - /fancy-flux-demos/action-examples
 | - /fancy-flux-demos/color-picker-examples
 | - /fancy-flux-demos/emoji-select-examples
 |
@@ -28,6 +29,9 @@ Route::prefix('fancy-flux-demos')->group(function () {
     Route::get('/', function () {
         return view('fancy-flux-demos::index');
     })->name('fancy-flux-demos.index');
+
+    Route::get('/action-examples', \App\Livewire\ActionDemo::class)
+        ->name('fancy-flux-demos.action-examples');
 
     Route::get('/basic-carousel', \App\Livewire\BasicCarouselDemo::class)
         ->name('fancy-flux-demos.basic-carousel');

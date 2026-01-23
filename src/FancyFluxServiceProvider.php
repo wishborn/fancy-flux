@@ -4,7 +4,9 @@ namespace FancyFlux;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Foundation\AliasLoader;
 use FancyFlux\Concerns\InteractsWithCarousel;
+use FancyFlux\Facades\Fancy;
 use Livewire\Component;
 
 class FancyFluxServiceProvider extends ServiceProvider
@@ -13,9 +15,20 @@ class FancyFluxServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
+     *
+     * Binds the FancyFlux service class and registers the FANCY facade alias.
      */
     public function register(): void
     {
+        // Bind the FancyFlux service as a singleton
+        $this->app->singleton(FancyFlux::class, function ($app) {
+            return new FancyFlux();
+        });
+
+        // Register the FANCY facade alias for global access
+        $loader = AliasLoader::getInstance();
+        $loader->alias('FANCY', Fancy::class);
+
         // Load base PHP config
         $this->mergeConfigFrom(
             __DIR__.'/../config/fancy-flux.php',
@@ -121,6 +134,7 @@ class FancyFluxServiceProvider extends ServiceProvider
 
             // Publish demo views only (not PHP source files)
             $this->publishes([
+                __DIR__.'/../demos/action-examples/action-examples.blade.php' => resource_path('views/livewire/action-examples-demo.blade.php'),
                 __DIR__.'/../demos/basic-carousel/basic-carousel.blade.php' => resource_path('views/livewire/basic-carousel-demo.blade.php'),
                 __DIR__.'/../demos/wizard-form/wizard-form.blade.php' => resource_path('views/livewire/wizard-form-demo.blade.php'),
                 __DIR__.'/../demos/nested-carousel/nested-carousel.blade.php' => resource_path('views/livewire/nested-carousel-demo.blade.php'),

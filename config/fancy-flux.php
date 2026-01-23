@@ -47,6 +47,7 @@ return [
     |
     */
     'components' => [
+        'action',
         'carousel',
         'color-picker',
         'emoji-select',

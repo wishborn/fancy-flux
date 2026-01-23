@@ -4,6 +4,8 @@ Custom Flux UI components for Laravel Livewire applications. Provides enhanced c
 
 ### Features
 
+- **FANCY Facade**: Unified API for programmatic access to emoji lookup, carousel control, and configuration
+- **Action Component**: Reusable button with state variants (active, warn, alert), flexible icon/emoji placement, and dark mode
 - **Carousel Component**: Flexible carousel/slideshow with multiple variants (directional, wizard, thumbnail)
 - **Color Picker Component**: Native color input with enhanced UI, swatch preview, and preset support
 - **Emoji Select Component**: Composable emoji picker with category navigation, search, and customizable styling
@@ -30,6 +32,111 @@ FANCY_FLUX_USE_FLUX_NAMESPACE=true
 
 - **No prefix (default):** Components available as `<flux:carousel>`
 - **With prefix:** Components available as `<fancy:carousel>` (and optionally `<flux:carousel>`)
+
+### FANCY Facade
+
+The `FANCY` facade provides unified access to FancyFlux features:
+
+@verbatim
+<code-snippet name="FANCY Facade Usage" lang="php">
+// Emoji lookup
+FANCY::emoji('fire');           // Returns: 🔥
+FANCY::emoji()->list();         // Get all emoji slugs
+FANCY::emoji()->find('rocket'); // Get emoji data
+FANCY::emoji()->search('heart'); // Search emojis
+
+// Carousel control
+FANCY::carousel('wizard')->next();
+FANCY::carousel('wizard')->goTo('step-3');
+FANCY::carousel('dynamic')->refreshAndGoTo('new-slide');
+
+// Configuration
+FANCY::prefix();            // Custom prefix or null
+FANCY::usesFluxNamespace(); // true/false
+FANCY::components();        // List of components
+</code-snippet>
+@endverbatim
+
+### Action Component
+
+A reusable button component with state variants, icons, emojis, and flexible placement.
+
+@verbatim
+<code-snippet name="Action Component States" lang="blade">
+<!-- Default state -->
+<flux:action>Default Action</flux:action>
+
+<!-- Active state (blue) -->
+<flux:action active>Active</flux:action>
+
+<!-- Warning state (amber) -->
+<flux:action warn icon="exclamation-triangle">Warning</flux:action>
+
+<!-- Alert state (pulse animation) -->
+<flux:action alert alert-icon="bell">Alert!</flux:action>
+</code-snippet>
+@endverbatim
+
+**Icon Placement Options:**
+
+@verbatim
+<code-snippet name="Action Icon Placement" lang="blade">
+<!-- Icon on left (default) -->
+<flux:action icon="pencil">Edit</flux:action>
+
+<!-- Icon on right -->
+<flux:action icon="arrow-right" icon-trailing>Next</flux:action>
+
+<!-- Icon above text -->
+<flux:action icon="cog" icon-place="top">Settings</flux:action>
+
+<!-- Icon below text -->
+<flux:action icon="info" icon-place="bottom">Info</flux:action>
+</code-snippet>
+@endverbatim
+
+**Emoji Support:**
+
+@verbatim
+<code-snippet name="Action with Emojis" lang="blade">
+<!-- Leading emoji -->
+<flux:action emoji="fire">Hot!</flux:action>
+<flux:action emoji="rocket" active>Launch</flux:action>
+
+<!-- Trailing emoji -->
+<flux:action emoji-trailing="thumbs-up">Like</flux:action>
+
+<!-- Combined emojis -->
+<flux:action emoji="party-popper" emoji-trailing="sparkles">Celebrate</flux:action>
+</code-snippet>
+@endverbatim
+
+**Size Variants:**
+
+@verbatim
+<code-snippet name="Action Sizes" lang="blade">
+<flux:action size="sm">Small</flux:action>
+<flux:action size="md">Medium</flux:action>
+<flux:action size="lg">Large</flux:action>
+</code-snippet>
+@endverbatim
+
+**Props Reference:**
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `active` | bool | false | Blue active/selected state |
+| `warn` | bool | false | Amber warning variant |
+| `alert` | bool | false | Pulse animation effect |
+| `icon` | string | null | Heroicon name for main icon |
+| `icon-color` | string | null | Custom icon color class |
+| `icon-place` | string | 'left' | Icon position: left, right, top, bottom, over, under |
+| `icon-trailing` | bool | false | Place icon on trailing side |
+| `alert-icon` | string | null | Pulsing icon for alert state |
+| `alert-icon-trailing` | bool | false | Pulsing icon on trailing side |
+| `emoji` | string | null | Emoji slug for leading emoji |
+| `emoji-trailing` | string | null | Emoji slug for trailing emoji |
+| `disabled` | bool | false | Disabled state |
+| `size` | string | 'md' | Size: sm, md, lg |
 
 ### Carousel Component
 
@@ -71,10 +178,30 @@ $slides = [
 </code-snippet>
 @endverbatim
 
-**Programmatic Navigation (Livewire):**
+**Programmatic Navigation (FANCY Facade - Recommended):**
 
 @verbatim
 <code-snippet name="Programmatic Carousel Control" lang="php">
+class MyComponent extends Component
+{
+    public function goToStep(string $stepName): void
+    {
+        // Use FANCY facade (preferred)
+        FANCY::carousel('my-carousel')->goTo($stepName);
+    }
+    
+    public function advanceWizard(): void
+    {
+        FANCY::carousel('wizard')->next();
+    }
+}
+</code-snippet>
+@endverbatim
+
+**Legacy InteractsWithCarousel Trait:**
+
+@verbatim
+<code-snippet name="Carousel with Trait" lang="php">
 use FancyFlux\Concerns\InteractsWithCarousel;
 
 class MyComponent extends Component
@@ -83,6 +210,7 @@ class MyComponent extends Component
     
     public function goToStep(string $stepName): void
     {
+        // Trait delegates to FANCY facade internally
         $this->carousel('my-carousel')->goTo($stepName);
     }
 }
@@ -148,12 +276,14 @@ Composable emoji picker with category navigation and search.
 
 ### Key Conventions
 
-- **Component Namespace**: Components use the `flux:` namespace by default (e.g., `flux:carousel`, `flux:color-picker`). If a custom prefix is configured (via `FANCY_FLUX_PREFIX`), components are also available with that prefix (e.g., `fancy:carousel`).
+- **FANCY Facade**: Use `FANCY::` for emoji lookup, carousel control, and configuration access
+- **Component Namespace**: Components use the `flux:` namespace by default. If `FANCY_FLUX_PREFIX` is configured, components are also available with that prefix.
 - **Livewire Integration**: Components work seamlessly with wire:model and wire:submit
 - **Unique Names**: When using multiple carousels, always provide unique name props
 - **Nested Carousels**: Use parentCarousel prop to link nested carousels to their parent
-- **Programmatic Control**: Use InteractsWithCarousel trait in Livewire components for programmatic navigation
-- **Prefix Configuration**: Use a custom prefix to avoid conflicts with official Flux components or other custom component packages
+- **Programmatic Control**: Use `FANCY::carousel('name')` (preferred) or InteractsWithCarousel trait
+- **Emoji Slugs**: Use kebab-case slugs like 'fire', 'thumbs-up', 'red-heart' for emojis
+- **Prefix Configuration**: Use a custom prefix to avoid conflicts with official Flux components
 
 ### Documentation
 
