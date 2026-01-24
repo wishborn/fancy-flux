@@ -14,6 +14,123 @@ Common issues and solutions for Fancy Flux, organized by version.
 
 ---
 
+## Upgrade Notes
+
+### Upgrading from 1.0.3 to 1.0.11
+
+This section covers all notable changes when upgrading from v1.0.3 to the latest version.
+
+#### New Features Added
+
+| Version | Feature | Description |
+|---------|---------|-------------|
+| 1.0.4 | **Action Component** | New button component with state variants (active, warn, alert) |
+| 1.0.10 | **FANCY Facade** | Unified API for emoji lookup and carousel control |
+| 1.0.10 | **Emoji Support** | 787+ emojis with slug-based lookup |
+| 1.0.10 | **Action Emoji Props** | `emoji` and `emoji-trailing` props for action buttons |
+
+#### Migration Steps
+
+**1. Clear Caches After Upgrade**
+
+```bash
+composer update wishborn/fancy-flux
+php artisan view:clear
+php artisan cache:clear
+```
+
+**2. 🟢 TIP: Use the FANCY Facade (v1.0.10+)**
+
+The new FANCY facade provides a cleaner API for carousel control:
+
+```php
+// Old way (still works)
+use FancyFlux\Concerns\InteractsWithCarousel;
+
+class MyComponent extends Component
+{
+    use InteractsWithCarousel;
+    
+    public function nextStep(): void
+    {
+        $this->carousel('wizard')->next();
+    }
+}
+
+// New way (recommended)
+use FancyFlux\Facades\FANCY;
+
+class MyComponent extends Component
+{
+    public function nextStep(): void
+    {
+        FANCY::carousel('wizard')->next();
+    }
+}
+```
+
+**3. 🟢 TIP: Use Emoji Slugs in Actions (v1.0.10+)**
+
+Action buttons now support emojis via slug:
+
+```blade
+<!-- New emoji support -->
+<flux:action emoji="fire">Hot!</flux:action>
+<flux:action emoji="rocket" emoji-trailing="sparkles">Launch</flux:action>
+```
+
+**4. 🟡 IMPORTANT: Boost Guidelines Format (v1.0.11)**
+
+If you're a package maintainer extending Fancy Flux, note that Boost guidelines must use `.md` format, not `.blade.php`. See the Laravel Boost documentation for details.
+
+#### No Breaking Changes
+
+Upgrading from 1.0.3 to 1.0.11 has **no breaking changes**. All existing code will continue to work:
+
+- ✅ `InteractsWithCarousel` trait still works (delegates to FANCY facade internally)
+- ✅ All component props remain unchanged
+- ✅ All existing templates continue to work
+- ✅ Configuration options unchanged
+
+---
+
+### Upgrading from 1.0.0 to 1.0.3
+
+#### Fixed in 1.0.1
+
+**Carousel Controls** - If you experienced issues with prev/next buttons not working in v1.0.0, upgrade to v1.0.1+ which fixed the Alpine.js scope resolution.
+
+#### Added in 1.0.3
+
+**USAGE.md Documentation** - Comprehensive documentation with tested examples was added.
+
+---
+
+### Quick Upgrade Command
+
+```bash
+# Upgrade to latest
+composer require wishborn/fancy-flux:^1.0.11
+
+# Clear caches
+php artisan view:clear && php artisan cache:clear
+
+# Verify installation
+php artisan tinker --execute="echo 'Fancy Flux ' . composer_show('wishborn/fancy-flux')['versions'][0];"
+```
+
+---
+
+## Version 1.0.11
+
+### Laravel Boost Integration
+
+**Issue:** `boost:install` crashes with "expecting endif" error
+
+**Fixed in v1.0.11** - Guidelines file converted from `.blade.php` to `.md` format.
+
+---
+
 ## Version 1.0.10
 
 ### Laravel Boost Integration
