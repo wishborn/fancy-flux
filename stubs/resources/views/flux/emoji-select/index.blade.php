@@ -1,3 +1,25 @@
+{{--
+    Emoji Select Component: A composable emoji picker with category navigation and search.
+
+    Why: Provides a user-friendly way to select emojis with category-based browsing,
+    search functionality, and integration with Livewire via wire:model.
+
+    Features:
+    - Uses flux:action as trigger button with flux:emoji for display
+    - Category navigation with emoji icons
+    - Optional search functionality
+    - Size variants (sm, md, lg, xl)
+    - Style variants (outline, filled, group)
+    - Square mode for compact layouts
+    - Position and alignment options for popover
+    - Full Livewire integration
+
+    Usage:
+    <flux:emoji-select wire:model.live="selectedEmoji" />
+    <flux:emoji-select wire:model.live="emoji" label="Reaction" placeholder="Pick one..." />
+    <flux:emoji-select wire:model.live="emoji" square />
+--}}
+
 @props([
     'name' => $attributes->whereStartsWith('wire:model')->first(),
     'size' => null,
@@ -24,43 +46,21 @@ $size = $size ?? 'md';
 $isGroupVariant = $variant === 'group';
 $isSquare = $square || $isGroupVariant;
 
-$triggerClasses = Flux::classes()
-    ->add('group/emoji-trigger cursor-pointer')
-    ->add('flex items-center justify-center')
-    ->add($isSquare ? '' : 'gap-2')
-    ->add('bg-white dark:bg-white/10')
-    ->add('hover:bg-zinc-50 dark:hover:bg-zinc-600/75')
-    ->add(match ($size) {
-        'sm' => $isSquare ? 'h-8 w-8 rounded-md' : 'h-8 text-sm rounded-md px-2',
-        'lg' => $isSquare ? 'h-12 w-12 rounded-lg' : 'h-12 text-base rounded-lg px-4',
-        'xl' => $isSquare ? 'h-14 w-14 rounded-lg' : 'h-14 text-lg rounded-lg px-5',
-        default => $isSquare ? 'h-10 w-10 rounded-lg' : 'h-10 text-sm rounded-lg px-3', // md
-    })
-    ->add(match ($variant) {
-        'filled' => 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700',
-        'group' => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs',
-        default => 'border border-zinc-200 border-b-zinc-300/80 dark:border-white/10 shadow-xs',
-    })
-    ;
+// Map component size to flux:action size
+$actionSize = match ($size) {
+    'sm' => 'sm',
+    'lg' => 'lg',
+    'xl' => 'lg', // action doesn't have xl, use lg
+    default => 'md',
+};
 
-$emojiDisplayClasses = Flux::classes()
-    ->add(match ($size) {
-        'sm' => 'text-lg',
-        'lg' => 'text-2xl',
-        'xl' => 'text-3xl',
-        default => 'text-xl', // md
-    })
-    ;
-
-$placeholderClasses = Flux::classes()
-    ->add('text-zinc-400 dark:text-zinc-500')
-    ->add(match ($size) {
-        'sm' => 'text-xs',
-        'lg' => 'text-base',
-        'xl' => 'text-lg',
-        default => 'text-sm', // md
-    })
-    ;
+// Map component size to flux:emoji size
+$emojiSize = match ($size) {
+    'sm' => 'sm',
+    'lg' => 'lg',
+    'xl' => 'xl',
+    default => 'md',
+};
 
 $popoverClasses = Flux::classes()
     ->add('rounded-lg shadow-lg')
@@ -188,16 +188,21 @@ $dropdownAttrs = $attributes->except(['wire:model', 'wire:model.live', 'value', 
     {{ $dropdownAttrs }}
     data-flux-emoji-select
 >
-    {{-- Trigger Button --}}
-    <button
+    {{-- Trigger Button using flux:action --}}
+    <flux:action
         type="button"
-        class="{{ $triggerClasses }}"
+        :size="$actionSize"
         data-flux-emoji-trigger
         data-flux-group-target
+        x-cloak
     >
-        <span x-show="selected" x-text="selected" class="{{ $emojiDisplayClasses }}"></span>
-        <span x-show="!selected" class="{{ $emojiDisplayClasses }} text-zinc-400">😀</span>
-    </button>
+        <template x-if="selected">
+            <span x-text="selected" class="text-lg"></span>
+        </template>
+        <template x-if="!selected">
+            <span class="text-lg text-zinc-400">😀</span>
+        </template>
+    </flux:action>
 
     {{-- Emoji Picker Popover --}}
     <div
@@ -298,20 +303,30 @@ $dropdownAttrs = $attributes->except(['wire:model', 'wire:model.live', 'value', 
     @endif
 
     <ui-dropdown position="{{ $position }} {{ $align }}" x-ref="dropdown" @open="onOpen()" {{ $dropdownAttrs }}>
-        {{-- Trigger Button --}}
-        <button
+        {{-- Trigger Button using flux:action --}}
+        <flux:action
             type="button"
-            class="{{ $triggerClasses }}"
+            :size="$actionSize"
             data-flux-emoji-trigger
+            x-cloak
         >
-            <span x-show="selected" x-text="selected" class="{{ $emojiDisplayClasses }}"></span>
+            {{-- Show selected emoji OR placeholder/chevron --}}
+            <template x-if="selected">
+                <span x-text="selected" class="{{ match($size) { 'sm' => 'text-base', 'lg' => 'text-xl', 'xl' => 'text-2xl', default => 'text-lg' } }}"></span>
+            </template>
             @if($isSquare)
-                <span x-show="!selected" class="{{ $emojiDisplayClasses }} text-zinc-400">😀</span>
+                <template x-if="!selected">
+                    <span class="{{ match($size) { 'sm' => 'text-base', 'lg' => 'text-xl', 'xl' => 'text-2xl', default => 'text-lg' } }} text-zinc-400">😀</span>
+                </template>
             @else
-                <span x-show="!selected" class="{{ $placeholderClasses }}">{{ $placeholder }}</span>
-                <flux:icon.chevron-down variant="mini" class="text-zinc-400 group-hover/emoji-trigger:text-zinc-600 dark:group-hover/emoji-trigger:text-zinc-300 transition-colors" />
+                <template x-if="!selected">
+                    <span class="flex items-center gap-2">
+                        <span class="text-zinc-400 dark:text-zinc-500 {{ match($size) { 'sm' => 'text-xs', 'lg' => 'text-base', default => 'text-sm' } }}">{{ $placeholder }}</span>
+                        <flux:icon.chevron-down variant="mini" class="text-zinc-400" />
+                    </span>
+                </template>
             @endif
-        </button>
+        </flux:action>
 
         {{-- Emoji Picker Popover --}}
         <div

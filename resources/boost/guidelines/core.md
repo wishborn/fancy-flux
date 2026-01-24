@@ -5,7 +5,7 @@ Custom Flux UI components for Laravel Livewire applications. Provides enhanced c
 ### Features
 
 - **FANCY Facade**: Unified API for programmatic access to emoji lookup, carousel control, and configuration
-- **Action Component**: Reusable button with state variants (active, warn, alert), flexible icon/emoji placement, and dark mode
+- **Action Component**: Reusable button with standalone colors, behavioral states (active, checked, warn, alert), shape variants (default, circle), avatars, badges, flexible icon/emoji placement, and dark mode
 - **Carousel Component**: Flexible carousel/slideshow with multiple variants (directional, wizard, thumbnail)
 - **Color Picker Component**: Native color input with enhanced UI, swatch preview, and preset support
 - **Emoji Select Component**: Composable emoji picker with category navigation, search, and customizable styling
@@ -57,20 +57,53 @@ FANCY::components();        // List of components
 
 ### Action Component
 
-A reusable button component with state variants, icons, emojis, and flexible placement.
+A reusable button component with standalone colors, behavioral states, icons, emojis, avatars, badges, and flexible placement.
 
 ```blade
 <!-- Default state -->
 <flux:action>Default Action</flux:action>
 
-<!-- Active state (blue) -->
-<flux:action active>Active</flux:action>
+<!-- Standalone colors (independent of states) -->
+<flux:action color="blue">Blue</flux:action>
+<flux:action color="emerald">Emerald</flux:action>
+<flux:action color="red">Red</flux:action>
+<flux:action color="violet">Violet</flux:action>
 
-<!-- Warning state (amber) -->
-<flux:action warn icon="exclamation-triangle">Warning</flux:action>
+<!-- Behavioral states (use default colors when no color prop) -->
+<flux:action active>Active (blue)</flux:action>
+<flux:action checked>Checked (emerald)</flux:action>
+<flux:action warn icon="exclamation-triangle">Warning (amber)</flux:action>
+<flux:action alert alert-icon="bell">Alert (pulse)</flux:action>
 
-<!-- Alert state (pulse animation) -->
-<flux:action alert alert-icon="bell">Alert!</flux:action>
+<!-- Color + state (color wins, state adds behavior) -->
+<flux:action color="red" alert>Red + Pulsing</flux:action>
+```
+
+**Shape Variants:**
+
+```blade
+<!-- Default (rounded rectangle) -->
+<flux:action icon="pencil">Edit</flux:action>
+
+<!-- Circle (perfect circle for icon-only) -->
+<flux:action variant="circle" icon="play" />
+<flux:action variant="circle" icon="pause" size="lg" />
+<flux:action variant="circle" emoji="fire" color="red" />
+```
+
+**Avatar, Badge & Sort:**
+
+```blade
+<!-- Avatar support -->
+<flux:action avatar="/img/user.jpg">John Doe</flux:action>
+<flux:action avatar="/img/user.jpg" avatar-trailing>Profile</flux:action>
+
+<!-- Badge support -->
+<flux:action badge="3" icon="bell">Notifications</flux:action>
+<flux:action badge="NEW" color="emerald">Featured</flux:action>
+
+<!-- Sort order (e=emoji, i=icon, a=avatar, b=badge) -->
+<flux:action icon="star" emoji="fire" badge="HOT" sort="bie">Custom Order</flux:action>
 ```
 
 **Icon Placement Options:**
@@ -94,7 +127,7 @@ A reusable button component with state variants, icons, emojis, and flexible pla
 ```blade
 <!-- Leading emoji -->
 <flux:action emoji="fire">Hot!</flux:action>
-<flux:action emoji="rocket" active>Launch</flux:action>
+<flux:action emoji="rocket" color="blue">Launch</flux:action>
 
 <!-- Trailing emoji -->
 <flux:action emoji-trailing="thumbs-up">Like</flux:action>
@@ -114,9 +147,12 @@ A reusable button component with state variants, icons, emojis, and flexible pla
 **Props Reference:**
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `active` | bool | false | Blue active/selected state |
-| `warn` | bool | false | Amber warning variant |
-| `alert` | bool | false | Pulse animation effect |
+| `variant` | string | 'default' | Shape: 'default' (rounded rectangle) or 'circle' |
+| `color` | string | null | Standalone color: blue, emerald, amber, red, violet, indigo, sky, rose, orange, zinc |
+| `active` | bool | false | Active/selected state (blue if no color) |
+| `checked` | bool | false | Toggle/checkbox state (emerald if no color) |
+| `warn` | bool | false | Warning state (light amber if no color) |
+| `alert` | bool | false | Pulse animation effect (no color change) |
 | `icon` | string | null | Heroicon name for main icon |
 | `icon-color` | string | null | Custom icon color class |
 | `icon-place` | string | 'left' | Icon position: left, right, top, bottom, over, under |
@@ -125,6 +161,11 @@ A reusable button component with state variants, icons, emojis, and flexible pla
 | `alert-icon-trailing` | bool | false | Pulsing icon on trailing side |
 | `emoji` | string | null | Emoji slug for leading emoji |
 | `emoji-trailing` | string | null | Emoji slug for trailing emoji |
+| `avatar` | string | null | Image URL for circular avatar |
+| `avatar-trailing` | bool | false | Place avatar on trailing side |
+| `badge` | string | null | Badge text to display |
+| `badge-trailing` | bool | false | Place badge on trailing side |
+| `sort` | string | 'eiab' | Element order: e=emoji, i=icon, a=avatar, b=badge |
 | `disabled` | bool | false | Disabled state |
 | `size` | string | 'md' | Size: sm, md, lg |
 
@@ -229,12 +270,35 @@ Native color input with enhanced UI and preset support.
 />
 ```
 
+### Emoji Component
+
+Display emojis using slugs, classic emoticons, or raw characters - like `flux:icon` but for emoji.
+
+```blade
+<!-- From slugs -->
+<flux:emoji name="fire" />           {{-- 🔥 --}}
+<flux:emoji name="rocket" size="lg" />
+
+<!-- From classic emoticons -->
+<flux:emoji name=":)" />             {{-- 😊 --}}
+<flux:emoji name=":D" />             {{-- 😃 --}}
+<flux:emoji name="<3" />             {{-- ❤️ --}}
+
+<!-- Dynamic usage -->
+<flux:emoji :name="$selectedEmoji" size="xl" />
+```
+
 ### Emoji Select Component
 
 Composable emoji picker with category navigation and search.
 
 ```blade
 <flux:emoji-select wire:model.live="selectedEmoji" />
+
+<!-- Display the selected emoji -->
+@if($selectedEmoji)
+    <flux:emoji :name="$selectedEmoji" size="lg" />
+@endif
 
 <!-- With label and custom placeholder -->
 <flux:emoji-select 
@@ -252,7 +316,7 @@ Composable emoji picker with category navigation and search.
 
 ### Key Conventions
 
-- **FANCY Facade**: Use `FANCY::` for emoji lookup, carousel control, and configuration access
+- **FANCY Facade**: Use `FANCY::` for emoji lookup (supports slugs AND emoticons like `:)`), carousel control, and configuration access
 - **Component Namespace**: Components use the `flux:` namespace by default. If `FANCY_FLUX_PREFIX` is configured, components are also available with that prefix.
 - **Livewire Integration**: Components work seamlessly with wire:model and wire:submit
 - **Unique Names**: When using multiple carousels, always provide unique name props

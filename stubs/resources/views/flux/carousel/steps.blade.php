@@ -17,6 +17,7 @@
 @props([
     'variant' => null,
     'headless' => null, // Override parent headless setting
+    'flush' => false, // Remove default spacing/padding (for custom containers)
 ])
 
 @php
@@ -27,18 +28,21 @@ $headless = $headless ?? false;
 $classes = Flux::classes()
     ->add('flex items-center justify-center')
     ->add(match ($variant) {
-        'wizard' => 'gap-2 py-4',
-        'thumbnail' => 'gap-2 py-3 overflow-x-auto', // Scrollable for many thumbnails
-        default => 'gap-2 pt-3', // Minimal top padding, no bottom padding for dots
+        // In flush mode, only add gap - no padding (for custom containers)
+        'wizard' => $flush ? 'gap-2' : 'gap-2 py-4',
+        'thumbnail' => $flush ? 'gap-2 overflow-x-auto' : 'gap-2 py-3 overflow-x-auto',
+        default => $flush ? 'gap-2' : 'gap-2 pt-3',
     })
     ;
 @endphp
 
 {{-- In headless mode, hide visually but keep for screen readers --}}
+{{-- Provide flush to child steps via x-data so they can inherit the setting --}}
 <div
     {{ $attributes->class($classes) }}
     @if($headless) x-show="false" @endif
     data-flux-carousel-steps
+    data-flush="{{ $flush ? 'true' : 'false' }}"
     role="tablist"
     aria-label="Carousel navigation"
 >

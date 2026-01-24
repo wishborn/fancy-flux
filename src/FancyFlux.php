@@ -5,6 +5,8 @@ namespace FancyFlux;
 use FancyFlux\Repositories\EmojiRepository;
 use FancyFlux\Managers\CarouselManager;
 use FancyFlux\Managers\CarouselController;
+use FancyFlux\Managers\TableManager;
+use FancyFlux\Managers\TableController;
 
 /**
  * Main FancyFlux service class.
@@ -18,6 +20,7 @@ use FancyFlux\Managers\CarouselController;
  * @example FANCY::emoji()->list()
  * @example FANCY::emoji('grinning-face') // shorthand for FANCY::emoji()->get('grinning-face')
  * @example FANCY::carousel('my-carousel')->next()
+ * @example FANCY::table('users')->refresh()
  */
 class FancyFlux
 {
@@ -25,10 +28,13 @@ class FancyFlux
 
     protected CarouselManager $carouselManager;
 
+    protected TableManager $tableManager;
+
     public function __construct()
     {
         $this->emojiRepository = new EmojiRepository();
         $this->carouselManager = new CarouselManager();
+        $this->tableManager = new TableManager();
     }
 
     /**
@@ -69,6 +75,25 @@ class FancyFlux
         }
 
         return $this->carouselManager->get($name);
+    }
+
+    /**
+     * Access the table manager or get a controller for a specific table.
+     *
+     * @param string|null $name Optional table name for direct access
+     * @return TableManager|TableController Manager or controller instance
+     *
+     * @example FANCY::table()->get('users') // Get table controller
+     * @example FANCY::table('users')->refresh() // Direct access and refresh
+     * @example FANCY::table('users')->selectAll() // Select all rows
+     */
+    public function table(?string $name = null): TableManager|TableController
+    {
+        if ($name === null) {
+            return $this->tableManager;
+        }
+
+        return $this->tableManager->get($name);
     }
 
     /**

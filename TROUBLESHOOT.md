@@ -16,6 +16,111 @@ Common issues and solutions for Fancy Flux, organized by version.
 
 ## Upgrade Notes
 
+### Upgrading to 1.0.13
+
+This version adds significant new features to the Action component with **no breaking changes**.
+
+#### New Action Component Features
+
+| Feature | Description |
+|---------|-------------|
+| `variant="circle"` | Perfect circle shape for icon-only buttons |
+| `color` prop | Standalone color theming (blue, emerald, red, violet, etc.) |
+| `checked` prop | Toggle/checkbox behavioral state |
+| `avatar` prop | Circular avatar image display |
+| `badge` prop | Text badge display (counts, labels) |
+| `sort` prop | Control element order (emoji, icon, avatar, badge) |
+
+#### 🟢 TIP: Color vs State Props
+
+The new `color` prop is **independent** of behavioral states:
+
+```blade
+{{-- Color alone (no state behavior) --}}
+<flux:action color="red">Delete</flux:action>
+
+{{-- State alone (uses default color) --}}
+<flux:action active>Active</flux:action>  {{-- Blue --}}
+<flux:action checked>Done</flux:action>   {{-- Emerald --}}
+
+{{-- Color + state (color wins, state adds behavior) --}}
+<flux:action color="violet" alert>Purple + Pulsing</flux:action>
+```
+
+#### 🟢 TIP: Circle Variant for Icon-Only Buttons
+
+```blade
+<flux:action variant="circle" icon="play" />
+<flux:action variant="circle" icon="pause" size="lg" color="blue" />
+<flux:action variant="circle" emoji="fire" />
+```
+
+#### 🟢 TIP: Avatar and Badge Support
+
+```blade
+<flux:action avatar="/img/user.jpg">John</flux:action>
+<flux:action badge="3" icon="bell">Notifications</flux:action>
+<flux:action avatar="/img/user.jpg" badge="Admin" sort="ab">John</flux:action>
+```
+
+#### No Breaking Changes
+
+All existing Action component code continues to work unchanged:
+- ✅ `active`, `warn`, `alert` props work as before
+- ✅ `icon`, `emoji` props work as before
+- ✅ All existing templates continue to work
+
+---
+
+### Upgrading to 0.5.0 (+GlowUp1)
+
+This version introduces Table, Timeline, and D3 components with extensive nesting support.
+
+#### 🟢 TIP: Carousel Nesting Verified
+
+The Carousel component has been audited and verified to support:
+- **3-level deep nesting**: Carousels within Carousels within Carousels
+- **Event isolation**: Nested controls don't affect parent carousels
+- **Dynamic containers**: Works in Livewire conditionals and `<details>` elements
+- **Performance**: 10+ carousels on one page with no issues
+
+This enables the new Table component's tray system which embeds carousels for nested content.
+
+#### 🟡 IMPORTANT: Fancy Table Component Name
+
+The new Table component is named `<flux:fancy-table>` to avoid conflicts with the official Flux Pro table component. If you're using the official Flux table, your code continues to work unchanged.
+
+```blade
+{{-- Official Flux table (unchanged) --}}
+<flux:table>...</flux:table>
+
+{{-- New Fancy Flux table --}}
+<flux:fancy-table :columns="$columns" :rows="$rows" />
+```
+
+#### 🟢 TIP: Using FANCY::table() for Programmatic Control
+
+```php
+use FancyFlux\Facades\FANCY;
+
+// Navigate pages
+FANCY::table('users')->nextPage();
+FANCY::table('users')->goToPage(3);
+
+// Selection
+FANCY::table('users')->selectAll();
+FANCY::table('users')->deselectAll();
+
+// Trays
+FANCY::table('users')->toggleTray('row-1');
+FANCY::table('users')->collapseAllTrays();
+
+// Sort
+FANCY::table('users')->sortBy('name', 'asc');
+```
+
+---
+
 ### Upgrading from 1.0.3 to 1.0.11
 
 This section covers all notable changes when upgrading from v1.0.3 to the latest version.

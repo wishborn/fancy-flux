@@ -464,6 +464,60 @@ class WizardDemo extends Component
 }
 ```
 
+## Control Styles
+
+The `flux:carousel.controls` component supports multiple display styles:
+
+### Dots (Default)
+
+Simple dot indicators showing current position. Clicking a dot navigates to that slide:
+
+```blade
+<flux:carousel.controls />
+{{-- or explicitly: --}}
+<flux:carousel.controls style="dots" />
+```
+
+### Arrows
+
+Prev/next arrow buttons with dot indicators:
+
+```blade
+<flux:carousel.controls style="arrows" />
+<flux:carousel.controls style="arrows" position="overlay" />
+```
+
+### Buttons
+
+Text-based Back/Next buttons (default for wizard variant):
+
+```blade
+<flux:carousel.controls style="buttons" />
+<flux:carousel.controls style="buttons" prevLabel="Go Back" nextLabel="Continue" />
+```
+
+### Minimal
+
+Just dots, no navigation buttons:
+
+```blade
+<flux:carousel.controls style="minimal" />
+```
+
+### Control Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `style` | string | auto | `'dots'`, `'arrows'`, `'buttons'`, `'minimal'` |
+| `position` | string | auto | `'bottom'`, `'overlay'`, `'sides'` |
+| `showDots` | bool | auto | Show/hide dot indicators |
+| `showPrev` | bool | `true` | Show previous button |
+| `showNext` | bool | `true` | Show next button |
+| `prevLabel` | string | 'Back' | Previous button text (buttons style) |
+| `nextLabel` | string | 'Next' | Next button text (buttons style) |
+| `finishLabel` | string | 'Finish' | Final step button text (wizard with wire:submit) |
+| `flush` | bool | `false` | Remove default margins (for custom containers) |
+
 ## Props Reference
 
 | Prop | Type | Default | Description |

@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.13] - 2026-01-24
+
+### Added
+- **Action Component - New Props**:
+  - `variant` prop: Shape variants - 'default' (rounded rectangle) or 'circle' (perfect circle for icon-only buttons)
+  - `color` prop: Standalone color theming independent of states - blue, emerald, amber, red, violet, indigo, sky, rose, orange, zinc
+  - `checked` prop: Toggle/checkbox behavioral state (emerald by default)
+  - `avatar` prop: Display circular avatar images
+  - `avatar-trailing` prop: Place avatar on trailing side
+  - `badge` prop: Display text badges (notification counts, labels)
+  - `badge-trailing` prop: Place badge on trailing side
+  - `sort` prop: Control element display order (e=emoji, i=icon, a=avatar, b=badge)
+
+- **Kitchen Sink Demo - RAMPAGE! Button**:
+  - Interactive demo showing all Action component features
+  - Circle play button that transforms into chaotic cycling button
+  - Demonstrates dynamic color, emoji, icon, badge, and sort changes
+
+### Changed
+- **Action Component - Color/State Separation**:
+  - `color` prop now takes precedence over all state-based colors
+  - States (`active`, `checked`, `warn`, `alert`) are now purely behavioral when `color` is set
+  - `alert` state only triggers pulse animation, never changes color
+
+### Notes
+- **No breaking changes**: All existing Action component usage continues to work
+- States without `color` prop use their default colors (active=blue, checked=emerald, warn=amber)
+
+## [0.5.0] - 2026-01-24 (+GlowUp1)
+
+### Added
+- **s13: Carousel Compatibility Audit**: Verified Carousel component's nesting capabilities
+  - ✅ 3-level deep nesting works correctly (Carousel in Carousel in Carousel)
+  - ✅ Event isolation: nested carousel controls don't affect parent carousels
+  - ✅ State management: carousels maintain independent state in dynamic Livewire containers
+  - ✅ Performance: 10+ carousels on one page with no JavaScript errors
+  - ✅ Collapsible containers: carousels work correctly inside `<details>` elements
+  - Added comprehensive browser tests in `tests/Feature/Browser/CarouselNestingTest.php`
+  - Added test demo page at `/fancy-flux/carousel-nesting-test`
+
+- **s10: Fancy Table Component**: Advanced data table with composable architecture
+  - **Data-driven mode**: Pass `:columns` and `:rows` arrays for quick table generation
+  - **Composable mode**: Full slot-based control with subcomponents
+  - **Column headers**: Action component props support (icon, active, warn, alert, sortable)
+  - **Column features**: Resizable (`resizable`) and reorderable (`reorderable`) props
+  - **Row trays**: Expandable detail areas with unified terminators (_table, _carousel, _d3, _view, string)
+  - **Multi-select**: Checkbox selection with `wire:model` binding
+  - **Search**: Deep path query support for nested data
+  - **Pagination**: Carousel-powered page navigation
+  - **Virtualization**: Performance optimization for large datasets with prefetch
+  - Added `TableManager` and `InteractsWithTable` trait for programmatic control
+  - Added `FANCY::table('name')` facade method
+  - Added comprehensive browser tests in `tests/Feature/Browser/TableTest.php`
+  - Added demo page at `/fancy-flux/table`
+
+### Notes
+- **Component name**: Use `<flux:fancy-table>` to avoid conflict with official Flux table
+- **D3 placeholder**: D3 visualization terminators show placeholders until s12 is complete
+
 ## [1.0.12] - 2026-01-24
 
 ### Added

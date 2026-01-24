@@ -52,14 +52,11 @@ $inputWrapperClasses = Flux::classes()
     })
     ;
 
+// The native color input is positioned absolutely over the swatch for better UX
+// This hides the default browser styling while keeping accessibility
 $inputClasses = Flux::classes()
-    ->add('appearance-none border-0 bg-transparent cursor-pointer')
-    ->add(match ($size) {
-        'sm' => 'w-12 h-8 rounded-md',
-        'lg' => 'w-16 h-12 rounded-lg',
-        default => 'w-14 h-10 rounded-lg',
-    })
-    ->add('focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500')
+    ->add('absolute inset-0 opacity-0 cursor-pointer')
+    ->add('focus:outline-none')
     ;
 
 $swatchClasses = Flux::classes()
@@ -105,21 +102,22 @@ $datalistId = 'color-presets-' . ($name ?? uniqid());
     @endif
 
     <div class="{{ $inputWrapperClasses }}">
-        <div class="{{ $swatchClasses }}">
+        {{-- Swatch with hidden color input overlay --}}
+        <div class="{{ $swatchClasses }} relative overflow-hidden">
             <div 
                 class="w-full h-full rounded"
                 :style="{ backgroundColor: color }"
             ></div>
+            {{-- Native color input is invisible but clickable over the swatch --}}
+            <input
+                type="color"
+                {{ $attributes->whereStartsWith('wire:model')->merge(['value' => $colorValueLower]) }}
+                class="{{ $inputClasses }}"
+                :value="color"
+                list="{{ $datalistId }}"
+                x-model="color"
+            />
         </div>
-
-        <input
-            type="color"
-            {{ $attributes->whereStartsWith('wire:model')->merge(['value' => $colorValueLower]) }}
-            class="{{ $inputClasses }}"
-            :value="color"
-            list="{{ $datalistId }}"
-            x-model="color"
-        />
 
         <span class="{{ $hexDisplayClasses }}" x-text="color ? color.toUpperCase().replace('#', '#') : '#3B82F6'"></span>
     </div>

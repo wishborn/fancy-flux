@@ -3,13 +3,16 @@
 {{--
     Carousel Controls: Navigation controls for the carousel.
 
-    Provides prev/next buttons for navigating between slides.
-    For wizard variant, also includes "Back" and "Next"/"Finish" text buttons.
+    Provides various styles of navigation:
+    - dots (default): Simple dot indicators for current position
+    - arrows: Prev/next arrow buttons (overlay or bottom)
+    - buttons: Text buttons with Back/Next labels (default for wizard)
+    - minimal: Just dots, no arrows
     
     Position options:
-    - overlay: Arrows positioned over the panels (default for directional)
-    - bottom: Controls below the panels (default for wizard)
-    - sides: Same as overlay, but without centering
+    - overlay: Controls positioned over the panels
+    - bottom: Controls below the panels (default)
+    - sides: Controls on left/right sides
     
     Wizard submit handling:
     - Use wire:submit="methodName" to call a Livewire method when finish is clicked
@@ -20,13 +23,16 @@
 
 @props([
     'variant' => null,
+    'style' => null, // 'dots' (default), 'arrows', 'buttons', 'minimal'
     'position' => null, // Auto-determined based on variant if not set
     'showPrev' => true,
     'showNext' => true,
+    'showDots' => null, // Auto-determined: true for dots/minimal, false for arrows/buttons
     'prevLabel' => null,
     'nextLabel' => null,
     'finishLabel' => 'Finish',
     'wireSubmit' => null, // Can be passed as a prop directly
+    'flush' => false, // Remove default spacing/margins (for custom containers)
 ])
 
 @php
@@ -40,8 +46,22 @@ $wireSubmit = $wireSubmitFromAttr ?? $wireSubmit;
 // Use aware variant if not explicitly set
 $variant = $variant ?? 'directional';
 
-// Auto-determine position based on variant if not explicitly set
-$position = $position ?? ($variant === 'wizard' ? 'bottom' : 'overlay');
+// Auto-determine style based on variant if not explicitly set
+// - wizard: uses 'buttons' style by default
+// - directional/thumbnail: uses 'dots' style by default
+$style = $style ?? ($variant === 'wizard' ? 'buttons' : 'dots');
+
+// Determine what to show based on style
+$showArrows = in_array($style, ['arrows']);
+$showButtons = in_array($style, ['buttons']);
+$showDots = $showDots ?? in_array($style, ['dots', 'minimal', 'arrows']);
+
+// Auto-determine position based on style/variant if not explicitly set
+$position = $position ?? match ($style) {
+    'arrows' => 'overlay',
+    'buttons' => 'bottom',
+    default => 'bottom',
+};
 
 // Default labels based on variant
 $prevLabel = $prevLabel ?? ($variant === 'wizard' ? 'Back' : 'Previous');
@@ -51,46 +71,65 @@ $containerClasses = Flux::classes()
     ->add(match ($position) {
         // Overlay positions arrows on left/right sides, vertically centered within the panels
         'overlay' => 'absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 pointer-events-none z-10',
-        // For wizard, use justify-end so Next button is always on right, Back button uses mr-auto
-        'bottom' => 'flex items-center justify-end mt-4 px-1',
+        // For buttons style, use justify-end so Next button is always on right, Back button uses mr-auto
+        // For dots style, center the dots
+        // Only add margin/padding when not in flush mode (flush is for custom containers)
+        'bottom' => $flush 
+            ? ($showButtons ? 'flex items-center justify-end' : 'flex items-center justify-center')
+            : ($showButtons ? 'flex items-center justify-end mt-4 px-1' : 'flex items-center justify-center mt-4'),
         'sides' => 'absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 pointer-events-none z-10',
-        default => 'flex items-center justify-between mt-4',
+        default => $flush ? 'flex items-center justify-center' : 'flex items-center justify-center mt-4',
     })
     ;
 
-$buttonClasses = match ($variant) {
-    'wizard' => Flux::classes()
-        ->add('px-4 py-2 rounded-lg font-medium text-sm')
-        ->add('transition-colors duration-200')
-        ->add('focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500')
-        ->add('pointer-events-auto')
-        ->add('disabled:opacity-50 disabled:cursor-not-allowed')
-        ,
-    default => Flux::classes()
-        ->add('size-10 rounded-full flex items-center justify-center')
-        ->add('bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm')
-        ->add('border border-zinc-200 dark:border-zinc-700')
-        ->add('text-zinc-700 dark:text-zinc-300')
-        ->add('hover:bg-white dark:hover:bg-zinc-800')
-        ->add('hover:text-zinc-900 dark:hover:text-white')
-        ->add('shadow-sm hover:shadow')
-        ->add('transition-all duration-200')
-        ->add('focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500')
-        ->add('disabled:opacity-50 disabled:cursor-not-allowed')
-        ->add('pointer-events-auto')
-        ,
+// Arrow button classes (for arrows style)
+$arrowButtonClasses = Flux::classes()
+    ->add('size-10 rounded-full flex items-center justify-center')
+    ->add('bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm')
+    ->add('border border-zinc-200 dark:border-zinc-700')
+    ->add('text-zinc-700 dark:text-zinc-300')
+    ->add('hover:bg-white dark:hover:bg-zinc-800')
+    ->add('hover:text-zinc-900 dark:hover:text-white')
+    ->add('shadow-sm hover:shadow')
+    ->add('transition-all duration-200')
+    ->add('focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500')
+    ->add('disabled:opacity-50 disabled:cursor-not-allowed')
+    ->add('pointer-events-auto')
+    ;
+
+// Text button classes (for buttons/wizard style)
+$textButtonClasses = Flux::classes()
+    ->add('px-4 py-2 rounded-lg font-medium text-sm')
+    ->add('transition-colors duration-200')
+    ->add('focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500')
+    ->add('pointer-events-auto')
+    ->add('disabled:opacity-50 disabled:cursor-not-allowed')
+    ;
+
+$prevButtonClasses = match ($style) {
+    'arrows' => $arrowButtonClasses,
+    'buttons' => $textButtonClasses . ' mr-auto text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800',
+    default => $arrowButtonClasses,
 };
 
-$prevButtonClasses = match ($variant) {
-    // mr-auto pushes the Back button to the left, keeping Next on the right
-    'wizard' => $buttonClasses . ' mr-auto text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800',
-    default => $buttonClasses,
+$nextButtonClasses = match ($style) {
+    'arrows' => $arrowButtonClasses,
+    'buttons' => $textButtonClasses . ' bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600',
+    default => $arrowButtonClasses,
 };
 
-$nextButtonClasses = match ($variant) {
-    'wizard' => $buttonClasses . ' bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600',
-    default => $buttonClasses,
-};
+// Dot indicator classes
+$dotContainerClasses = Flux::classes()
+    ->add('flex items-center gap-1.5')
+    ;
+
+$dotClasses = Flux::classes()
+    ->add('size-2 rounded-full transition-all duration-200 cursor-pointer')
+    ->add('hover:scale-125')
+    ;
+
+$dotActiveClasses = 'bg-blue-500 dark:bg-blue-400';
+$dotInactiveClasses = 'bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500';
 @endphp
 
 {{-- 
@@ -101,8 +140,10 @@ $nextButtonClasses = match ($variant) {
 <div
     {{ $attributes->except('wire:submit')->class($containerClasses) }}
     data-flux-carousel-controls
+    data-style="{{ $style }}"
 >
-    @if ($showPrev)
+    {{-- Previous Button (arrows or buttons style only) --}}
+    @if (($showArrows || $showButtons) && $showPrev)
         <button
             type="button"
             class="{{ $prevButtonClasses }}"
@@ -111,30 +152,46 @@ $nextButtonClasses = match ($variant) {
             x-show="canGoPrev() || loop"
             aria-label="{{ $prevLabel }}"
         >
-            @if ($variant === 'wizard')
+            @if ($showButtons)
                 <span>{{ $prevLabel }}</span>
             @else
                 <flux:icon.chevron-left class="size-5 rtl:rotate-180" />
             @endif
         </button>
-    @else
+    @elseif ($showArrows || $showButtons)
         <div></div>
     @endif
 
-    @if ($showNext)
+    {{-- Dot Indicators (dots, minimal, or arrows style) --}}
+    @if ($showDots)
+        <div class="{{ $dotContainerClasses }}" role="tablist" aria-label="Slide navigation">
+            <template x-for="(step, index) in totalSteps" :key="index">
+                <button
+                    type="button"
+                    class="{{ $dotClasses }}"
+                    :class="currentStep === index ? '{{ $dotActiveClasses }}' : '{{ $dotInactiveClasses }}'"
+                    x-on:click="goTo(index)"
+                    :aria-selected="currentStep === index"
+                    :aria-label="'Go to slide ' + (index + 1)"
+                    role="tab"
+                ></button>
+            </template>
+        </div>
+    @endif
+
+    {{-- Next Button (arrows or buttons style only) --}}
+    @if (($showArrows || $showButtons) && $showNext)
         <button
             type="button"
             class="{{ $nextButtonClasses }}"
-            {{-- For wizard variant on last step: --}}
+            {{-- For buttons style with wizard variant on last step: --}}
             {{-- - If wire:submit is provided, call the method and dispatch finish event --}}
             {{-- - If no wire:submit but has parent carousel, advance parent on last step --}}
             {{-- - Otherwise, just navigate normally --}}
-            @if ($variant === 'wizard')
+            @if ($showButtons && $variant === 'wizard')
                 @if ($wireSubmit)
                     x-on:click.prevent="if (isLast()) { $wire.call('{{ $wireSubmit }}'); $dispatch('carousel-finish'); } else { next(); }"
                 @else
-                    {{-- Only advance parent on the actual last step, otherwise advance this carousel --}}
-                    {{-- Must check: totalSteps > 0 to ensure carousel is initialized, and isLast() to ensure we're on final step --}}
                     x-on:click.prevent="
                         if (totalSteps > 0 && isLast() && parentCarousel && parent && typeof parent.next === 'function') {
                             parent.next();
@@ -146,23 +203,14 @@ $nextButtonClasses = match ($variant) {
             @else
                 x-on:click.prevent="next()"
             @endif
-            {{-- Hide button on last step only if: wizard variant, no wire:submit, no parent carousel, and no loop --}}
-            {{-- Show button if: not on last step, OR has parent carousel on last step, OR loop is enabled --}}
-            {{-- Explicit check: hide only when isLast() AND !parentCarousel AND !loop --}}
-            x-show="{{ ($variant === 'wizard' && !$wireSubmit) ? '!(isLast() && !parentCarousel && !loop)' : 'true' }}"
-            {{-- Enable button if: --}}
-            {{-- - Has wire:submit (always enabled, shows "Finish" on last step) --}}
-            {{-- - Can go to next step (not on last step) --}}
-            {{-- - Is on last step but has parent carousel (to advance parent) - ONLY on final step --}}
-            {{-- - Loop is enabled (can always go next) --}}
-            :disabled="{{ ($variant === 'wizard' && $wireSubmit) ? 'false' : ($variant === 'wizard' ? '!(!isLast() || (isLast() && parentCarousel && parent && typeof parent.next === \"function\") || loop)' : '!canGoNext()') }}"
+            {{-- Visibility and disabled state logic --}}
+            x-show="{{ ($showButtons && $variant === 'wizard' && !$wireSubmit) ? '!(isLast() && !parentCarousel && !loop)' : 'true' }}"
+            :disabled="{{ ($showButtons && $variant === 'wizard' && $wireSubmit) ? 'false' : ($showButtons && $variant === 'wizard' ? '!(!isLast() || (isLast() && parentCarousel && parent && typeof parent.next === \"function\") || loop)' : '!canGoNext()') }}"
             aria-label="{{ $nextLabel }}"
         >
-            @if ($variant === 'wizard' && $wireSubmit)
-                {{-- Only show Finish label when wire:submit is provided --}}
+            @if ($showButtons && $variant === 'wizard' && $wireSubmit)
                 <span x-text="isLast() ? '{{ $finishLabel }}' : '{{ $nextLabel }}'">{{ $nextLabel }}</span>
-            @elseif ($variant === 'wizard')
-                {{-- No wire:submit, always show Next label --}}
+            @elseif ($showButtons)
                 <span>{{ $nextLabel }}</span>
             @else
                 <flux:icon.chevron-right class="size-5 rtl:rotate-180" />

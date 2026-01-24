@@ -12,13 +12,15 @@ Custom Flux UI components for Laravel Livewire applications.
 
 ### ⚡ Action
 
-A reusable button component with state variants, icons, emojis, and flexible placement for action-oriented UI elements.
+A reusable button component with standalone colors, behavioral states, shape variants, avatars, badges, icons, emojis, and flexible placement.
 
 **Quick Example:**
 ```blade
 <flux:action icon="pencil">Edit</flux:action>
-<flux:action emoji="fire" active>Hot!</flux:action>
-<flux:action warn icon="exclamation-triangle">Warning</flux:action>
+<flux:action color="blue" emoji="fire">Hot!</flux:action>
+<flux:action color="red" badge="3">Alerts</flux:action>
+<flux:action variant="circle" icon="play" />
+<flux:action avatar="/img/user.jpg" badge="Admin">John</flux:action>
 ```
 
 [📖 Full Documentation](docs/action.md) | [💡 Examples](demos/action-examples/)
@@ -55,7 +57,22 @@ A native color input component with enhanced UI, swatch preview, and preset supp
 
 ---
 
-### 😀 Emoji Select
+### 😀 Emoji
+
+Display emojis using slugs, classic emoticons, or raw characters - like `flux:icon` but for emoji.
+
+**Quick Example:**
+```blade
+<flux:emoji name="fire" />           {{-- 🔥 from slug --}}
+<flux:emoji name=":)" />             {{-- 😊 from emoticon --}}
+<flux:emoji name="rocket" size="lg" />
+```
+
+[📖 Full Documentation](docs/emoji.md)
+
+---
+
+### 🎯 Emoji Select
 
 A composable emoji picker component with category navigation, search, and customizable styling.
 
@@ -75,8 +92,10 @@ The `FANCY` facade provides programmatic access to FancyFlux features:
 ```php
 // Emoji lookup (787+ emojis with slug-based access)
 FANCY::emoji('fire');           // Returns: 🔥
+FANCY::emoji(':)');             // Returns: 😊 (emoticon support!)
 FANCY::emoji()->list();         // Get all emoji slugs
 FANCY::emoji()->search('heart'); // Search emojis
+FANCY::emoji()->emoticons();    // Get all supported emoticons
 
 // Carousel control
 FANCY::carousel('wizard')->next();

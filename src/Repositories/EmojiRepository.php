@@ -6,17 +6,21 @@ use FancyFlux\EmojiData;
 use Illuminate\Support\Str;
 
 /**
- * Repository for emoji lookup by slug.
+ * Repository for emoji lookup by slug or emoticon.
  *
  * Provides a clean API for accessing emoji data using kebab-case slugs
- * generated from emoji names. Used by the FANCY facade and components.
+ * generated from emoji names, or classic emoticons like :) and :(.
+ * Used by the FANCY facade, flux:emoji component, and other components.
  *
  * Why: Centralizes emoji lookup logic and provides slug-based access
  * that's more developer-friendly than searching by character or name.
+ * Emoticon support enables natural text-to-emoji conversion.
  *
  * @example FANCY::emoji()->list() // ['grinning-face', 'waving-hand', ...]
  * @example FANCY::emoji()->get('fire') // '🔥'
+ * @example FANCY::emoji()->get(':)') // '😊'
  * @example FANCY::emoji()->find('fire') // ['char' => '🔥', 'name' => 'fire', 'slug' => 'fire', 'category' => 'symbols']
+ * @example FANCY::emoji()->resolve('🔥') // '🔥' (passthrough)
  */
 class EmojiRepository
 {
@@ -35,6 +39,99 @@ class EmojiRepository
     protected ?array $slugList = null;
 
     /**
+     * Classic emoticon to emoji character mapping.
+     * Supports common text emoticons and converts them to UTF-8 emoji.
+     *
+     * @var array<string, string>
+     */
+    protected static array $emoticons = [
+        // Smileys
+        ':)' => '😊',
+        ':-)' => '😊',
+        ':]' => '😊',
+        ':D' => '😃',
+        ':-D' => '😃',
+        ':d' => '😃',
+        'xD' => '😆',
+        'XD' => '😆',
+        ':P' => '😛',
+        ':-P' => '😛',
+        ':p' => '😛',
+        ';)' => '😉',
+        ';-)' => '😉',
+        ':*' => '😘',
+        ':-*' => '😘',
+        '<3' => '❤️',
+        '</3' => '💔',
+
+        // Sad/Negative
+        ':(' => '😢',
+        ':-(' => '😢',
+        ':[' => '😢',
+        ":'(" => '😭',
+        ':\'(' => '😭',
+        'D:' => '😧',
+        ':/' => '😕',
+        ':-/' => '😕',
+        ':\'' => '😕',
+        ':S' => '😖',
+        ':s' => '😖',
+        ':|' => '😐',
+        ':-|' => '😐',
+
+        // Surprised/Shocked
+        ':O' => '😮',
+        ':-O' => '😮',
+        ':o' => '😮',
+        'O_O' => '😳',
+        'o_o' => '😳',
+        'O.O' => '😳',
+        ':0' => '😮',
+
+        // Cool/Special
+        'B)' => '😎',
+        'B-)' => '😎',
+        '8)' => '😎',
+        '8-)' => '😎',
+        '>:)' => '😈',
+        '>:-)' => '😈',
+        '>:(' => '😠',
+        '>:-(' => '😠',
+        ':@' => '😠',
+
+        // Japanese/Kaomoji style
+        '^_^' => '😊',
+        '^.^' => '😊',
+        '-_-' => '😑',
+        '>_<' => '😣',
+        'T_T' => '😭',
+        'T.T' => '😭',
+        'o/' => '👋',
+        '\\o/' => '🙌',
+        'm/' => '🤘',
+
+        // Misc
+        ':3' => '😺',
+        '=)' => '😊',
+        '=(' => '😢',
+        '=D' => '😃',
+        '<(' => '🐧',
+        ':+1:' => '👍',
+        ':-1:' => '👎',
+        ':thumbsup:' => '👍',
+        ':thumbsdown:' => '👎',
+        ':ok:' => '👌',
+        ':wave:' => '👋',
+        ':clap:' => '👏',
+        ':pray:' => '🙏',
+        ':fire:' => '🔥',
+        ':100:' => '💯',
+        ':poop:' => '💩',
+        ':skull:' => '💀',
+        ':eyes:' => '👀',
+    ];
+
+    /**
      * Get all available emoji slugs.
      *
      * @return array<string>
@@ -47,16 +144,75 @@ class EmojiRepository
     }
 
     /**
-     * Get emoji character by slug.
+     * Get emoji character by slug or emoticon.
      *
-     * @param string $slug Kebab-case emoji slug (e.g., 'grinning-face')
+     * Supports:
+     * - Kebab-case slugs: 'fire', 'grinning-face'
+     * - Classic emoticons: ':)', ':(', ':D'
+     * - Slack/Discord style: ':fire:', ':thumbsup:'
+     *
+     * @param string $slug Kebab-case emoji slug or emoticon
      * @return string|null Emoji character or null if not found
      */
     public function get(string $slug): ?string
     {
+        // Check emoticons first (exact match)
+        if (isset(self::$emoticons[$slug])) {
+            return self::$emoticons[$slug];
+        }
+
+        // Check slug lookup
         $this->ensureLoaded();
 
         return $this->emojiBySlug[$slug]['char'] ?? null;
+    }
+
+    /**
+     * Resolve any emoji input to a character.
+     *
+     * Accepts:
+     * - Raw emoji characters (passthrough): '🔥' -> '🔥'
+     * - Kebab-case slugs: 'fire' -> '🔥'
+     * - Classic emoticons: ':)' -> '😊'
+     *
+     * @param string|null $input Emoji character, slug, or emoticon
+     * @return string|null Emoji character or null if not resolvable
+     */
+    public function resolve(?string $input): ?string
+    {
+        if ($input === null || $input === '') {
+            return null;
+        }
+
+        // If it's already an emoji character (multi-byte UTF-8), return as-is
+        // Emoji characters are typically 3-4 bytes, while ASCII is 1 byte
+        if (mb_strlen($input, 'UTF-8') <= 2 && strlen($input) > mb_strlen($input, 'UTF-8')) {
+            return $input;
+        }
+
+        // Try to resolve as emoticon or slug
+        return $this->get($input);
+    }
+
+    /**
+     * Get all supported emoticons.
+     *
+     * @return array<string, string> Emoticon to emoji character mapping
+     */
+    public function emoticons(): array
+    {
+        return self::$emoticons;
+    }
+
+    /**
+     * Check if input is a known emoticon.
+     *
+     * @param string $input Text to check
+     * @return bool
+     */
+    public function isEmoticon(string $input): bool
+    {
+        return isset(self::$emoticons[$input]);
     }
 
     /**

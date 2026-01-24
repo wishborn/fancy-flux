@@ -51,6 +51,7 @@ return [
         'carousel',
         'color-picker',
         'emoji-select',
+        'fancy-table',
     ],
 
     /*
