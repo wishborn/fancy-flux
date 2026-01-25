@@ -141,6 +141,7 @@ class FancyFluxServiceProvider extends ServiceProvider
                 __DIR__.'/../demos/dynamic-carousel/dynamic-carousel.blade.php' => resource_path('views/livewire/dynamic-carousel-demo.blade.php'),
                 __DIR__.'/../demos/color-picker-examples/color-picker-examples.blade.php' => resource_path('views/livewire/color-picker-examples-demo.blade.php'),
                 __DIR__.'/../demos/emoji-select-examples/emoji-select-examples.blade.php' => resource_path('views/livewire/emoji-select-examples-demo.blade.php'),
+                __DIR__.'/../demos/drawer-examples/drawer-examples.blade.php' => resource_path('views/livewire/drawer-examples.blade.php'),
             ], 'fancy-flux-demos-views');
         }
 

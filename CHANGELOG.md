@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.14] - 2026-01-24
+
+### Added
+- **D3 Component**: Advanced data visualizations powered by D3.js
+  - Force-directed graphs for network relationships
+  - Hierarchical layouts: tree, treemap, sunburst, pack
+  - Chord diagrams for matrix flow visualization
+  - Dark mode support with automatic color switching
+  - Tooltips, zoom/pan, and animation support
+  - `FANCY::d3('name')` facade for programmatic control
+  - `InteractsWithD3` trait for Livewire components
+
+- **D3 Sparkline Component**: Compact inline visualizations
+  - Types: line, area, bar, win-loss
+  - Tailwind color support
+  - Min/max markers and endpoint indicators
+  - Perfect for table cell visualizations
+
+- **D3 as Tray Terminator**: Embed D3 visualizations in table row trays
+  - Use `['_d3' => ['type' => 'force', 'data' => $data]]` in tray data
+
+- **D3 Configuration**: New config section in `fancy-flux.php`
+  - CDN vs local D3 loading
+  - Default color palettes for light/dark modes
+  - Animation duration settings
+
+### Changed
+- Updated `fancy-table` tray component to render D3 visualizations (previously placeholder)
+
 ## [1.0.13] - 2026-01-24
 
 ### Added

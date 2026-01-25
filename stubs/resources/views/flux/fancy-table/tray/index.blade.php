@@ -78,10 +78,17 @@ $classes = Flux::classes()
                     @break
 
                 @case('d3')
-                    {{-- D3 visualization placeholder - will be implemented in s12 --}}
-                    <div class="p-4 bg-zinc-100 dark:bg-zinc-800 rounded text-sm text-zinc-500 dark:text-zinc-400">
-                        [D3 visualization - type: {{ $contentData['type'] ?? 'unknown' }}]
-                    </div>
+                    <flux:d3
+                        :type="$contentData['type'] ?? 'force'"
+                        :data="$contentData['data'] ?? []"
+                        :width="$contentData['width'] ?? null"
+                        :height="$contentData['height'] ?? 300"
+                        :colors="$contentData['colors'] ?? null"
+                        :tooltip="$contentData['tooltip'] ?? true"
+                        :zoom="$contentData['zoom'] ?? false"
+                        :animate="$contentData['animate'] ?? true"
+                        :name="$contentData['name'] ?? null"
+                    />
                     @break
 
                 @default

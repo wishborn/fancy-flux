@@ -47,7 +47,7 @@
         <flux:carousel name="dynamic-carousel" :autoplay="false" :loop="true" class="max-w-xl">
             <flux:carousel.panels>
                 @foreach($slides as $slide)
-                    <flux:carousel.step.item :name="$slide['name']" :label="$slide['label']" wire:key="slide-{{ $slide['name'] }}">
+                    <flux:carousel.panel :name="$slide['name']" :label="$slide['label']" wire:key="slide-{{ $slide['name'] }}">
                         <div class="flex items-center justify-center h-48 rounded-xl text-white bg-gradient-to-br 
                             @switch($slide['color'])
                                 @case('blue') from-blue-500 to-blue-600 @break
@@ -69,17 +69,17 @@
                                 <flux:badge class="mt-3" variant="outline">{{ $slide['name'] }}</flux:badge>
                             </div>
                         </div>
-                    </flux:carousel.step.item>
+                    </flux:carousel.panel>
                 @endforeach
             </flux:carousel.panels>
             
             <flux:carousel.controls position="overlay" />
             
-            <flux:carousel.steps>
+            <flux:carousel.tabs>
                 @foreach($slides as $slide)
                     <flux:carousel.step :name="$slide['name']" wire:key="step-{{ $slide['name'] }}" />
                 @endforeach
-            </flux:carousel.steps>
+            </flux:carousel.tabs>
         </flux:carousel>
         
         {{-- Show the data structure --}}
@@ -206,17 +206,17 @@
                     name="agent-wizard"
                 >
                     {{-- Hidden steps (variant inherited from parent) --}}
-                    <flux:carousel.steps :headless="true">
+                    <flux:carousel.tabs :headless="true">
                         @foreach($stepHistory as $index => $stepId)
                             @php $step = $allSteps[$stepId]; @endphp
-                            <flux:carousel.step name="step-{{ $index }}-{{ $stepId }}" :label="$step['title']" wire:key="wizard-step-{{ $index }}-{{ $stepId }}" />
+                            <flux:carousel.tab name="step-{{ $index }}-{{ $stepId }}" :label="$step['title']" wire:key="wizard-step-{{ $index }}-{{ $stepId }}" />
                         @endforeach
-                    </flux:carousel.steps>
+                    </flux:carousel.tabs>
                     
                     <flux:carousel.panels>
                         @foreach($stepHistory as $index => $stepId)
                             @php $step = $allSteps[$stepId]; @endphp
-                            <flux:carousel.step.item name="step-{{ $index }}-{{ $stepId }}" :label="$step['title']" wire:key="wizard-panel-{{ $index }}-{{ $stepId }}">
+                            <flux:carousel.panel name="step-{{ $index }}-{{ $stepId }}" :label="$step['title']" wire:key="wizard-panel-{{ $index }}-{{ $stepId }}">
                                 <div class="p-6 min-h-[300px]">
                                     {{-- Step Header --}}
                                     <div class="flex items-center gap-3 mb-4">
@@ -396,7 +396,7 @@
                                             <flux:text>Processing step: {{ $stepId }}</flux:text>
                                     @endswitch
                                 </div>
-                            </flux:carousel.step.item>
+                            </flux:carousel.panel>
                         @endforeach
                     </flux:carousel.panels>
                 </flux:carousel>

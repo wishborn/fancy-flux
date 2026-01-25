@@ -155,21 +155,21 @@ Trays can contain carousels for complex nested content:
 ```blade
 <flux:fancy-table.tray :row="$row">
     <flux:carousel variant="wizard" name="order-{{ $row->id }}-details">
-        <flux:carousel.steps>
-            <flux:carousel.step name="items" label="Items" />
-            <flux:carousel.step name="shipping" label="Shipping" />
-            <flux:carousel.step name="history" label="History" />
-        </flux:carousel.steps>
+        <flux:carousel.tabs>
+            <flux:carousel.tab name="items" label="Items" />
+            <flux:carousel.tab name="shipping" label="Shipping" />
+            <flux:carousel.tab name="history" label="History" />
+        </flux:carousel.tabs>
         <flux:carousel.panels>
-            <flux:carousel.step.item name="items">
+            <flux:carousel.panel name="items">
                 {{-- Items content --}}
-            </flux:carousel.step.item>
-            <flux:carousel.step.item name="shipping">
+            </flux:carousel.panel>
+            <flux:carousel.panel name="shipping">
                 {{-- Shipping content --}}
-            </flux:carousel.step.item>
-            <flux:carousel.step.item name="history">
+            </flux:carousel.panel>
+            <flux:carousel.panel name="history">
                 {{-- History content --}}
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
         </flux:carousel.panels>
     </flux:carousel>
 </flux:fancy-table.tray>

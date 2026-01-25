@@ -10,21 +10,21 @@
     
     {{-- Parent Wizard --}}
     <flux:carousel variant="wizard" :loop="false" class="max-w-2xl" name="parent-wizard">
-        <flux:carousel.steps>
-            <flux:carousel.step name="step1" label="Step 1" />
-            <flux:carousel.step name="step2" label="Step 2" />
-            <flux:carousel.step name="step3" label="Step 3" />
-        </flux:carousel.steps>
+        <flux:carousel.tabs>
+            <flux:carousel.tab name="step1" label="Step 1" />
+            <flux:carousel.tab name="step2" label="Step 2" />
+            <flux:carousel.tab name="step3" label="Step 3" />
+        </flux:carousel.tabs>
         
         <flux:carousel.panels>
-            <flux:carousel.step.item name="step1">
+            <flux:carousel.panel name="step1">
                 <div class="p-6">
                     <flux:heading size="md">Parent Step 1</flux:heading>
                     <flux:text class="mt-2">This is the first step of the parent wizard.</flux:text>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
             
-            <flux:carousel.step.item name="step2">
+            <flux:carousel.panel name="step2">
                 <div class="p-6">
                     <flux:heading size="md">Parent Step 2 - Contains Nested Wizard</flux:heading>
                     <flux:text class="mt-2 mb-4">This step contains a nested wizard. Navigate through the nested steps.</flux:text>
@@ -33,23 +33,23 @@
                     <div class="mt-4 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 bg-white dark:bg-zinc-900">
                         <flux:heading size="sm" class="mb-3">Nested Wizard</flux:heading>
                         <flux:carousel variant="wizard" :loop="false" name="nested-wizard" parentCarousel="parent-wizard">
-                            <flux:carousel.steps>
-                                <flux:carousel.step name="nested1" label="Nested 1" />
-                                <flux:carousel.step name="nested2" label="Nested 2" />
-                            </flux:carousel.steps>
+                            <flux:carousel.tabs>
+                                <flux:carousel.tab name="nested1" label="Nested 1" />
+                                <flux:carousel.tab name="nested2" label="Nested 2" />
+                            </flux:carousel.tabs>
                             
                             <flux:carousel.panels>
-                                <flux:carousel.step.item name="nested1">
+                                <flux:carousel.panel name="nested1">
                                     <div class="p-4">
                                         <flux:text class="text-sm">First nested step content.</flux:text>
                                     </div>
-                                </flux:carousel.step.item>
+                                </flux:carousel.panel>
                                 
-                                <flux:carousel.step.item name="nested2">
+                                <flux:carousel.panel name="nested2">
                                     <div class="p-4">
                                         <flux:text class="text-sm">Second nested step content. Click "Complete" to advance parent wizard.</flux:text>
                                     </div>
-                                </flux:carousel.step.item>
+                                </flux:carousel.panel>
                             </flux:carousel.panels>
                             
                             {{-- wire:submit handler can call parent.next() --}}
@@ -57,14 +57,14 @@
                         </flux:carousel>
                     </div>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
             
-            <flux:carousel.step.item name="step3">
+            <flux:carousel.panel name="step3">
                 <div class="p-6">
                     <flux:heading size="md">Parent Step 3</flux:heading>
                     <flux:text class="mt-2">Final step of the parent wizard.</flux:text>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
         </flux:carousel.panels>
         
         <flux:carousel.controls />

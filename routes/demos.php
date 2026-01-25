@@ -50,4 +50,7 @@ Route::prefix('fancy-flux-demos')->group(function () {
 
     Route::get('/emoji-select-examples', \App\Livewire\EmojiSelectDemo::class)
         ->name('fancy-flux-demos.emoji-select-examples');
+
+    Route::get('/drawer-examples', \App\Livewire\DrawerExamples::class)
+        ->name('fancy-flux-demos.drawer-examples');
 });

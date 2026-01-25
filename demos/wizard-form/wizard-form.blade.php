@@ -11,14 +11,14 @@
     })"
 >
     <flux:carousel variant="wizard" :loop="false" class="max-w-2xl" name="wizard-form">
-        <flux:carousel.steps>
-            <flux:carousel.step name="account" label="Account" />
-            <flux:carousel.step name="profile" label="Profile" />
-            <flux:carousel.step name="review" label="Review" />
-        </flux:carousel.steps>
+        <flux:carousel.tabs>
+            <flux:carousel.tab name="account" label="Account" />
+            <flux:carousel.tab name="profile" label="Profile" />
+            <flux:carousel.tab name="review" label="Review" />
+        </flux:carousel.tabs>
         
         <flux:carousel.panels>
-            <flux:carousel.step.item name="account">
+            <flux:carousel.panel name="account">
                 <div class="p-6">
                     <flux:heading size="md">Create Your Account</flux:heading>
                     <flux:text class="mt-2 mb-4">Enter your email and password to get started.</flux:text>
@@ -27,9 +27,9 @@
                         <flux:input label="Password" type="password" placeholder="••••••••" wire:model.blur="password" />
                     </div>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
             
-            <flux:carousel.step.item name="profile">
+            <flux:carousel.panel name="profile">
                 <div class="p-6">
                     <flux:heading size="md">Complete Your Profile</flux:heading>
                     <flux:text class="mt-2 mb-4">Tell us a bit about yourself.</flux:text>
@@ -38,9 +38,9 @@
                         <flux:textarea label="Bio" placeholder="A short bio..." rows="3" wire:model.blur="bio" />
                     </div>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
             
-            <flux:carousel.step.item name="review">
+            <flux:carousel.panel name="review">
                 <div class="p-6">
                     <flux:heading size="md">Review & Confirm</flux:heading>
                     <flux:text class="mt-2 mb-4">Review your information before submitting.</flux:text>
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                 </div>
-            </flux:carousel.step.item>
+            </flux:carousel.panel>
         </flux:carousel.panels>
         
         {{-- wire:submit calls submitWizard() when Complete is clicked --}}

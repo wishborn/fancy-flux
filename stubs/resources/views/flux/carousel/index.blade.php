@@ -12,14 +12,26 @@
     
     2. Slot-based (flexible): Use sub-components for full control
        <flux:carousel>
-           <flux:carousel.panels>...</flux:carousel.panels>
+           <flux:carousel.panels>
+               <flux:carousel.panel name="intro">Content here</flux:carousel.panel>
+           </flux:carousel.panels>
            <flux:carousel.controls />
-           <flux:carousel.steps>...</flux:carousel.steps>
+           <flux:carousel.tabs>
+               <flux:carousel.tab name="intro" label="Introduction" />
+           </flux:carousel.tabs>
        </flux:carousel>
+
+    Sub-components:
+    - flux:carousel.panels - Container for content panels
+    - flux:carousel.panel - Individual content panel
+    - flux:carousel.controls - Prev/Next navigation buttons
+    - flux:carousel.tabs - Container for navigation tabs (clickable)
+    - flux:carousel.tab - Individual navigation tab (matches ARIA role="tab")
 
     Variants:
     - directional (default): Navigation with prev/next arrows, supports autoplay
-    - wizard: Step-based navigation with numbered indicators
+    - wizard: Step-based navigation with pill indicators
+    - thumbnail: Navigation with small preview images
 
     Features:
     - Dynamic slides via data prop or slot
@@ -243,16 +255,16 @@ $classes = Flux::classes()
     aria-label="{{ $name ?? 'Carousel' }}"
 >
     @if ($slides)
-        {{-- Data-driven mode: auto-generate slides from data prop --}}
+        {{-- Data-driven mode: auto-generate panels from data prop --}}
         <flux:carousel.panels>
             @foreach ($slides as $slide)
-                <flux:carousel.step.item 
+                <flux:carousel.panel 
                     :name="$slide['name']" 
                     :label="$slide['label'] ?? null"
                     :description="$slide['description'] ?? null"
                     :src="$slide['src'] ?? $slide['image'] ?? null"
                     :alt="$slide['alt'] ?? $slide['label'] ?? null"
-                    wire:key="carousel-{{ $carouselId }}-item-{{ $slide['name'] }}"
+                    wire:key="carousel-{{ $carouselId }}-panel-{{ $slide['name'] }}"
                 />
             @endforeach
         </flux:carousel.panels>
@@ -260,17 +272,17 @@ $classes = Flux::classes()
         <flux:carousel.controls :wireSubmit="$wireSubmit" />
         
         @if (!$headless)
-            <flux:carousel.steps>
+            <flux:carousel.tabs>
                 @foreach ($slides as $slide)
-                    <flux:carousel.step 
+                    <flux:carousel.tab 
                         :name="$slide['name']" 
                         :label="in_array($variant, ['wizard', 'thumbnail']) ? ($slide['label'] ?? null) : null"
                         :src="$variant === 'thumbnail' ? ($slide['thumbnail'] ?? $slide['src'] ?? $slide['image'] ?? null) : null"
                         :alt="$variant === 'thumbnail' ? ($slide['alt'] ?? $slide['label'] ?? null) : null"
-                        wire:key="carousel-{{ $carouselId }}-step-{{ $slide['name'] }}"
+                        wire:key="carousel-{{ $carouselId }}-tab-{{ $slide['name'] }}"
                     />
                 @endforeach
-            </flux:carousel.steps>
+            </flux:carousel.tabs>
         @endif
     @else
         {{-- Slot-based mode: use sub-components --}}

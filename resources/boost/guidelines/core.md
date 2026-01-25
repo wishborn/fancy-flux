@@ -190,15 +190,15 @@ $slides = [
 
 ```blade
 <flux:carousel variant="wizard" :loop="false" name="wizard-form">
-    <flux:carousel.steps>
-        <flux:carousel.step name="account" label="Account" />
-        <flux:carousel.step name="profile" label="Profile" />
-    </flux:carousel.steps>
+    <flux:carousel.tabs>
+        <flux:carousel.tab name="account" label="Account" />
+        <flux:carousel.tab name="profile" label="Profile" />
+    </flux:carousel.tabs>
     
     <flux:carousel.panels>
-        <flux:carousel.step.item name="account">
+        <flux:carousel.panel name="account">
             <!-- Form content -->
-        </flux:carousel.step.item>
+        </flux:carousel.panel>
     </flux:carousel.panels>
     
     <flux:carousel.controls wire:submit="submitWizard" />
@@ -245,12 +245,12 @@ class MyComponent extends Component
 ```blade
 <flux:carousel variant="wizard" :loop="false" name="parent-wizard">
     <flux:carousel.panels>
-        <flux:carousel.step.item name="step1">
+        <flux:carousel.panel name="step1">
             <!-- Nested carousel -->
             <flux:carousel variant="wizard" name="nested-wizard" parentCarousel="parent-wizard">
                 <!-- Nested content -->
             </flux:carousel>
-        </flux:carousel.step.item>
+        </flux:carousel.panel>
     </flux:carousel.panels>
 </flux:carousel>
 ```
@@ -363,9 +363,64 @@ FANCY::table('users')->selectAll();
 - Search with deep path query support
 - Carousel-powered pagination
 
+### D3 Visualization Component
+
+Advanced data visualizations powered by D3.js. Complements Flux Pro's `flux:chart` with force graphs, hierarchies, and flow diagrams.
+
+```blade
+{{-- Force-directed graph --}}
+<flux:d3 type="force" :data="$networkData" :height="500" tooltip zoom />
+
+{{-- Tree hierarchy --}}
+<flux:d3 type="tree" :data="$orgChart" :height="400" />
+
+{{-- Treemap --}}
+<flux:d3 type="treemap" :data="$fileSystem" :height="300" tooltip />
+
+{{-- Sunburst --}}
+<flux:d3 type="sunburst" :data="$categories" :height="400" />
+```
+
+**Sparklines for Tables:**
+
+```blade
+<flux:d3.sparkline :data="[12, 15, 8, 22, 18, 25]" />
+<flux:d3.sparkline :data="$trend" type="area" color="emerald" />
+<flux:d3.sparkline :data="$values" type="bar" color="violet" />
+<flux:d3.sparkline :data="[1, -1, 1, 1, -1]" type="win-loss" />
+```
+
+**Data Formats:**
+
+```php
+// Force graph
+$networkData = [
+    'nodes' => [['id' => 'A', 'label' => 'Node A', 'group' => 1], ...],
+    'links' => [['source' => 'A', 'target' => 'B', 'value' => 1], ...],
+];
+
+// Hierarchy (tree, treemap, sunburst, pack)
+$hierarchy = [
+    'name' => 'root',
+    'children' => [
+        ['name' => 'child1', 'value' => 100],
+        ['name' => 'child2', 'children' => [...]],
+    ],
+];
+```
+
+**Programmatic Control:**
+
+```php
+FANCY::d3('network')->update($newData);
+FANCY::d3('network')->zoomToFit();
+FANCY::d3('tree')->toggleNode('node-5');
+FANCY::d3('graph')->highlight(['A', 'B']);
+```
+
 ### Key Conventions
 
-- **FANCY Facade**: Use `FANCY::` for emoji lookup (supports slugs AND emoticons like `:)`), carousel control, table control, and configuration access
+- **FANCY Facade**: Use `FANCY::` for emoji lookup (supports slugs AND emoticons like `:)`), carousel control, table control, D3 control, and configuration access
 - **Component Namespace**: Components use the `flux:` namespace by default. If `FANCY_FLUX_PREFIX` is configured, components are also available with that prefix.
 - **Livewire Integration**: Components work seamlessly with wire:model and wire:submit
 - **Unique Names**: When using multiple carousels or tables, always provide unique name props

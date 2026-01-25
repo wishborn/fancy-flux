@@ -5,6 +5,8 @@ namespace FancyFlux;
 use FancyFlux\Repositories\EmojiRepository;
 use FancyFlux\Managers\CarouselManager;
 use FancyFlux\Managers\CarouselController;
+use FancyFlux\Managers\DrawerManager;
+use FancyFlux\Managers\DrawerController;
 use FancyFlux\Managers\TableManager;
 use FancyFlux\Managers\TableController;
 
@@ -28,12 +30,15 @@ class FancyFlux
 
     protected CarouselManager $carouselManager;
 
+    protected DrawerManager $drawerManager;
+
     protected TableManager $tableManager;
 
     public function __construct()
     {
         $this->emojiRepository = new EmojiRepository();
         $this->carouselManager = new CarouselManager();
+        $this->drawerManager = new DrawerManager();
         $this->tableManager = new TableManager();
     }
 
@@ -75,6 +80,25 @@ class FancyFlux
         }
 
         return $this->carouselManager->get($name);
+    }
+
+    /**
+     * Access the drawer manager or get a controller for a specific drawer.
+     *
+     * @param string|null $name Optional drawer name for direct access
+     * @return DrawerManager|DrawerController Manager or controller instance
+     *
+     * @example FANCY::drawer()->get('settings') // Get drawer controller
+     * @example FANCY::drawer('settings')->open() // Direct access and open
+     * @example FANCY::drawer('settings')->goTo('advanced') // Navigate to panel
+     */
+    public function drawer(?string $name = null): DrawerManager|DrawerController
+    {
+        if ($name === null) {
+            return $this->drawerManager;
+        }
+
+        return $this->drawerManager->get($name);
     }
 
     /**

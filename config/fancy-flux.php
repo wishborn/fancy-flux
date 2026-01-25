@@ -50,6 +50,7 @@ return [
         'action',
         'carousel',
         'color-picker',
+        'emoji',
         'emoji-select',
         'fancy-table',
     ],

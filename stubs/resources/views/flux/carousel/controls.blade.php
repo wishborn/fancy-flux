@@ -169,9 +169,9 @@ $dotInactiveClasses = 'bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover
                 <button
                     type="button"
                     class="{{ $dotClasses }}"
-                    :class="currentStep === index ? '{{ $dotActiveClasses }}' : '{{ $dotInactiveClasses }}'"
-                    x-on:click="goTo(index)"
-                    :aria-selected="currentStep === index"
+                    :class="activeIndex === index ? '{{ $dotActiveClasses }}' : '{{ $dotInactiveClasses }}'"
+                    x-on:click="goToIndex(index)"
+                    :aria-selected="activeIndex === index"
                     :aria-label="'Go to slide ' + (index + 1)"
                     role="tab"
                 ></button>
@@ -205,7 +205,13 @@ $dotInactiveClasses = 'bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover
             @endif
             {{-- Visibility and disabled state logic --}}
             x-show="{{ ($showButtons && $variant === 'wizard' && !$wireSubmit) ? '!(isLast() && !parentCarousel && !loop)' : 'true' }}"
-            :disabled="{{ ($showButtons && $variant === 'wizard' && $wireSubmit) ? 'false' : ($showButtons && $variant === 'wizard' ? '!(!isLast() || (isLast() && parentCarousel && parent && typeof parent.next === \"function\") || loop)' : '!canGoNext()') }}"
+            @if ($showButtons && $variant === 'wizard' && $wireSubmit)
+                :disabled="false"
+            @elseif ($showButtons && $variant === 'wizard')
+                :disabled="!(!isLast() || (isLast() && parentCarousel && parent && typeof parent.next === 'function') || loop)"
+            @else
+                :disabled="!canGoNext()"
+            @endif
             aria-label="{{ $nextLabel }}"
         >
             @if ($showButtons && $variant === 'wizard' && $wireSubmit)

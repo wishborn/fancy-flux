@@ -16,6 +16,88 @@ Common issues and solutions for Fancy Flux, organized by version.
 
 ## Upgrade Notes
 
+### Upgrading to 1.0.14
+
+This version simplifies the Carousel component naming convention for better clarity and ARIA compliance.
+
+#### 🔴 BREAKING: Carousel Component Naming Changes
+
+The carousel sub-component names have been simplified:
+
+| Old Component | New Component | Reason |
+|---------------|---------------|--------|
+| `flux:carousel.step.item` | `flux:carousel.panel` | "Panel" is clearer than nested "step.item" |
+| `flux:carousel.step` | `flux:carousel.tab` | Matches ARIA semantics (role="tab") - these are clickable |
+| `flux:carousel.steps` | `flux:carousel.tabs` | Matches ARIA semantics (role="tablist") |
+
+**Migration Required:**
+
+```blade
+{{-- OLD (deprecated, but still works via alias) --}}
+<flux:carousel variant="wizard">
+    <flux:carousel.steps>
+        <flux:carousel.step name="intro" label="Introduction" />
+        <flux:carousel.step name="config" label="Configuration" />
+    </flux:carousel.steps>
+    
+    <flux:carousel.panels>
+        <flux:carousel.step.item name="intro">Welcome!</flux:carousel.step.item>
+        <flux:carousel.step.item name="config">Settings...</flux:carousel.step.item>
+    </flux:carousel.panels>
+    
+    <flux:carousel.controls />
+</flux:carousel>
+
+{{-- NEW (recommended) --}}
+<flux:carousel variant="wizard">
+    <flux:carousel.tabs>
+        <flux:carousel.tab name="intro" label="Introduction" />
+        <flux:carousel.tab name="config" label="Configuration" />
+    </flux:carousel.tabs>
+    
+    <flux:carousel.panels>
+        <flux:carousel.panel name="intro">Welcome!</flux:carousel.panel>
+        <flux:carousel.panel name="config">Settings...</flux:carousel.panel>
+    </flux:carousel.panels>
+    
+    <flux:carousel.controls />
+</flux:carousel>
+```
+
+#### 🟡 IMPORTANT: Backward Compatibility
+
+The old component names (`step.item`, `step`, `steps`, `indicator`, `indicators`) are **aliased** to the new names and continue to work. However, they are **deprecated** and will be removed in a future major version.
+
+**Find & Replace Commands:**
+
+```bash
+# For Unix/Mac/Git Bash
+grep -rl "carousel.step.item" resources/views | xargs sed -i 's/carousel\.step\.item/carousel.panel/g'
+grep -rl "carousel.steps" resources/views | xargs sed -i 's/carousel\.steps/carousel.tabs/g'
+grep -rl "carousel.step" resources/views | xargs sed -i 's/carousel\.step\b/carousel.tab/g'
+
+# For Windows PowerShell
+Get-ChildItem -Recurse -Filter "*.blade.php" | ForEach-Object {
+    (Get-Content $_.FullName) -replace 'carousel\.step\.item', 'carousel.panel' | Set-Content $_.FullName
+}
+```
+
+#### 🟢 TIP: Components That Stay The Same
+
+These carousel components are unchanged:
+- `flux:carousel` - Main container
+- `flux:carousel.panels` - Content container
+- `flux:carousel.controls` - Prev/Next buttons
+
+#### 🟢 TIP: Mental Model
+
+The new naming creates a clear mental model:
+- **tabs** = clickable navigation (where you want to go) - matches `role="tablist"` / `role="tab"`
+- **panels** = content containers (what you see) - matches `role="tabpanel"`
+- **controls** = prev/next buttons (sequential navigation)
+
+---
+
 ### Upgrading to 1.0.13
 
 This version adds significant new features to the Action component with **no breaking changes**.

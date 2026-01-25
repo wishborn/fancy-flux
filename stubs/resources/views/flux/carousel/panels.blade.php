@@ -1,15 +1,21 @@
 @blaze
 
 {{--
-    Carousel Panels Container: Container for carousel step items.
+    Carousel Panels Container: Container for carousel panel items.
 
-    This wraps all carousel.step.item components and provides the sliding/fading
+    This wraps all carousel.panel components and provides the sliding/fading
     container for the content panels.
     
     Includes built-in styling for a polished look out of the box:
     - Rounded corners
     - Relative positioning for overlay controls
     - Proper overflow handling
+
+    @example
+    <flux:carousel.panels>
+        <flux:carousel.panel name="intro">Content here</flux:carousel.panel>
+        <flux:carousel.panel name="details">More content</flux:carousel.panel>
+    </flux:carousel.panels>
 --}}
 
 @aware(['variant' => 'directional'])

@@ -85,6 +85,16 @@ A composable emoji picker component with category navigation, search, and custom
 
 ---
 
+### 📈 D3 Visualizations (Moved to Fancy Pro)
+
+> **Note:** D3 visualizations have been moved to the [wishborn/fancy-pro](https://github.com/wishborn/fancy-pro) package for better separation of premium features.
+
+```bash
+composer require wishborn/fancy-pro
+```
+
+---
+
 ### 📊 Fancy Table
 
 Advanced data table with composable architecture, expandable row trays, and Carousel-powered pagination.
